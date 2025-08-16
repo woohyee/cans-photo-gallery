@@ -11,9 +11,46 @@ function Theme() {
     : filterByTag(photoCollections, 'theme', selectedTheme);
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-light mb-8 text-center">주제별 갤러리</h1>
+    <div style={{ 
+      minHeight: '100vh', 
+      backgroundColor: 'black', 
+      color: 'white', 
+      paddingTop: window.innerWidth <= 480 ? '140px' : window.innerWidth <= 768 ? '160px' : '20vh',
+      padding: window.innerWidth <= 480 ? '140px 16px 32px 16px' : window.innerWidth <= 768 ? '160px 16px 32px 16px' : '20vh 32px 32px 32px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <div style={{ textAlign: 'center', maxWidth: '400px' }}>
+        <div style={{ fontSize: '80px', marginBottom: '24px' }}>🎨</div>
+        <h1 style={{ 
+          fontSize: window.innerWidth <= 480 ? '24px' : '32px', 
+          fontWeight: '600', 
+          marginBottom: '16px',
+          fontFamily: '"Noto Sans KR", sans-serif'
+        }}>
+          주제별 갤러리
+        </h1>
+        <p style={{ 
+          fontSize: window.innerWidth <= 480 ? '16px' : '18px', 
+          color: '#9ca3af', 
+          marginBottom: '24px',
+          lineHeight: '1.5'
+        }}>
+          현재 개발 중입니다
+        </p>
+        <div style={{ 
+          backgroundColor: 'rgba(255, 193, 7, 0.1)', 
+          border: '1px solid rgba(255, 193, 7, 0.3)',
+          borderRadius: '12px',
+          padding: '16px',
+          color: '#fbbf24'
+        }}>
+          <p style={{ margin: 0, fontSize: '14px' }}>
+            자연, 도시, 인물 등 주제별 분류 기능이 곧 추가됩니다!
+          </p>
+        </div>
+      </div>
         
         {/* 테마 필터 */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">

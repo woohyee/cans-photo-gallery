@@ -279,13 +279,20 @@ function Daily() {
       minHeight: '100vh', 
       backgroundColor: 'black', 
       color: 'white', 
-      paddingTop: window.innerWidth <= 768 ? '15vh' : '20vh',
-      padding: window.innerWidth <= 768 ? '15vh 16px 32px 16px' : '20vh 32px 32px 32px'
+      paddingTop: window.innerWidth <= 480 ? '140px' : window.innerWidth <= 768 ? '160px' : '20vh',
+      padding: window.innerWidth <= 480 ? '140px 16px 32px 16px' : window.innerWidth <= 768 ? '160px 16px 32px 16px' : '20vh 32px 32px 32px'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          marginBottom: window.innerWidth <= 480 ? '20px' : '32px',
+          flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
+          gap: window.innerWidth <= 480 ? '12px' : '0'
+        }}>
           <h1 style={{ 
-            fontSize: window.innerWidth <= 768 ? '28px' : '36px', 
+            fontSize: window.innerWidth <= 480 ? '24px' : window.innerWidth <= 768 ? '28px' : '36px', 
             fontWeight: '600', 
             margin: 0,
             fontFamily: '"Noto Sans KR", sans-serif'
@@ -326,28 +333,29 @@ function Daily() {
         </div>
         
         {/* 날짜 필터 (가로 스크롤) */}
-        <div style={{ marginBottom: '48px', overflow: 'hidden' }}>
+        <div style={{ marginBottom: window.innerWidth <= 480 ? '24px' : '48px', overflow: 'hidden' }}>
           <div style={{ 
             display: 'flex', 
-            gap: '16px', 
+            gap: window.innerWidth <= 480 ? '8px' : '16px', 
             paddingBottom: '16px',
             overflowX: 'auto',
             scrollbarWidth: 'thin',
-            scrollbarColor: 'rgba(255,255,255,0.3) transparent'
+            scrollbarColor: 'rgba(255,255,255,0.3) transparent',
+            WebkitOverflowScrolling: 'touch'
           }}>
             <button
               onClick={() => setSelectedDate('all')}
               style={{
-                padding: '16px 28px',
-                borderRadius: '30px',
-                fontSize: '18px',
+                padding: window.innerWidth <= 480 ? '12px 20px' : '16px 28px',
+                borderRadius: window.innerWidth <= 480 ? '20px' : '30px',
+                fontSize: window.innerWidth <= 480 ? '14px' : '18px',
                 border: 'none',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
                 backgroundColor: selectedDate === 'all' ? 'white' : 'rgba(255,255,255,0.1)',
                 color: selectedDate === 'all' ? 'black' : 'white',
                 whiteSpace: 'nowrap',
-                minWidth: '120px',
+                minWidth: window.innerWidth <= 480 ? '80px' : '120px',
                 fontWeight: selectedDate === 'all' ? '600' : '400'
               }}
             >
@@ -358,16 +366,16 @@ function Daily() {
                 key={date}
                 onClick={() => setSelectedDate(date)}
                 style={{
-                  padding: '16px 28px',
-                  borderRadius: '30px',
-                  fontSize: '18px',
+                  padding: window.innerWidth <= 480 ? '12px 16px' : '16px 28px',
+                  borderRadius: window.innerWidth <= 480 ? '20px' : '30px',
+                  fontSize: window.innerWidth <= 480 ? '14px' : '18px',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.3s',
                   backgroundColor: selectedDate === date ? 'white' : 'rgba(255,255,255,0.1)',
                   color: selectedDate === date ? 'black' : 'white',
                   whiteSpace: 'nowrap',
-                  minWidth: '160px',
+                  minWidth: window.innerWidth <= 480 ? '120px' : '160px',
                   fontWeight: selectedDate === date ? '600' : '400'
                 }}
               >
@@ -378,7 +386,7 @@ function Daily() {
         </div>
 
         {/* 타임라인 스타일 결과 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: window.innerWidth <= 480 ? '20px' : '32px' }}>
           {filteredCollections.map((collection) => (
             <div key={collection.id} style={{ 
               backgroundColor: 'rgba(255,255,255,0.05)', 
@@ -388,34 +396,64 @@ function Daily() {
             }}>
               {/* 날짜 헤더 */}
               <div style={{ 
-                padding: '24px', 
+                padding: window.innerWidth <= 480 ? '16px' : '24px', 
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
                 backgroundColor: 'rgba(255,255,255,0.05)'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <h2 style={{ fontSize: '24px', fontWeight: '400', margin: 0 }}>{collection.title}</h2>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: window.innerWidth <= 480 ? 'flex-start' : 'center', 
+                  marginBottom: '12px',
+                  flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
+                  gap: window.innerWidth <= 480 ? '8px' : '0'
+                }}>
+                  <h2 style={{ 
+                    fontSize: window.innerWidth <= 480 ? '18px' : '24px', 
+                    fontWeight: '500', 
+                    margin: 0,
+                    fontFamily: '"Noto Sans KR", sans-serif'
+                  }}>
+                    {collection.title}
+                  </h2>
                   <span style={{ 
-                    fontSize: '18px', 
+                    fontSize: window.innerWidth <= 480 ? '14px' : '18px', 
                     color: '#60a5fa',
                     backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                    padding: '6px 16px',
-                    borderRadius: '20px'
+                    padding: window.innerWidth <= 480 ? '4px 12px' : '6px 16px',
+                    borderRadius: '20px',
+                    alignSelf: window.innerWidth <= 480 ? 'flex-start' : 'auto'
                   }}>
                     📅 {collection.date}
                   </span>
                 </div>
-                <p style={{ fontSize: '16px', color: '#9ca3af', margin: '8px 0' }}>📍 {collection.location}</p>
-                <p style={{ fontSize: '16px', color: '#d1d5db', margin: 0 }}>{collection.description}</p>
+                <p style={{ 
+                  fontSize: window.innerWidth <= 480 ? '14px' : '16px', 
+                  color: '#9ca3af', 
+                  margin: '8px 0' 
+                }}>
+                  📍 {collection.location}
+                </p>
+                <p style={{ 
+                  fontSize: window.innerWidth <= 480 ? '14px' : '16px', 
+                  color: '#d1d5db', 
+                  margin: 0,
+                  lineHeight: '1.4'
+                }}>
+                  {collection.description}
+                </p>
               </div>
               
               {/* 이미지 그리드 */}
-              <div style={{ padding: '24px' }}>
+              <div style={{ padding: window.innerWidth <= 480 ? '16px' : '24px' }}>
                 {/* 이미지 개수 및 더보기 정보 */}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'center', 
-                  marginBottom: '16px' 
+                  marginBottom: window.innerWidth <= 480 ? '12px' : '16px',
+                  flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
+                  gap: window.innerWidth <= 480 ? '8px' : '0'
                 }}>
                   <span style={{ fontSize: '14px', color: '#9ca3af' }}>
                     📸 총 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장

@@ -35,8 +35,8 @@ function HeroSlide() {
   const currentCollection = featuredCollections[currentSlide];
   const mainImage = currentCollection.images[0]; // 첫 번째 이미지를 대표 이미지로
 
-  const headerHeight = window.innerWidth <= 768 ? '15vh' : '20vh';
-  const contentHeight = window.innerWidth <= 768 ? '85vh' : '80vh';
+  const headerHeight = window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh';
+  const contentHeight = window.innerWidth <= 480 ? 'calc(100vh - 120px)' : window.innerWidth <= 768 ? 'calc(100vh - 140px)' : '80vh';
 
   return (
     <div style={{ 

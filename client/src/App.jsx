@@ -18,26 +18,26 @@ function App() {
     <Router>
       <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
         
-        {/* 상단 타이틀 영역 (반응형) */}
+        {/* 상단 타이틀 영역 (모바일 최적화) */}
         <header style={{ 
           position: 'fixed', 
           top: 0, 
           left: 0, 
           right: 0, 
-          height: window.innerWidth <= 768 ? '15vh' : '20vh',
-          minHeight: '100px',
+          height: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
+          minHeight: '120px',
           background: 'linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.4) 100%)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: window.innerWidth <= 768 ? '0 20px' : '0 40px'
+          padding: window.innerWidth <= 768 ? '16px' : '0 40px'
         }}>
           {/* 로고 + 타이틀 (중앙) */}
           <Link to="/" style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: window.innerWidth <= 768 ? '16px' : '32px', 
+            gap: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '16px' : '32px', 
             textDecoration: 'none',
             flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
             textAlign: 'center'
@@ -46,20 +46,21 @@ function App() {
               src="/images/logo/logo.png" 
               alt="Can Photo" 
               style={{ 
-                height: window.innerWidth <= 768 ? '120px' : '240px', 
-                width: window.innerWidth <= 768 ? '120px' : '240px',
+                height: window.innerWidth <= 480 ? '50px' : window.innerWidth <= 768 ? '60px' : '240px', 
+                width: window.innerWidth <= 480 ? '50px' : window.innerWidth <= 768 ? '60px' : '240px',
                 filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
               }}
             />
             <h1 style={{ 
-              fontSize: window.innerWidth <= 480 ? '24px' : window.innerWidth <= 768 ? '36px' : '64px',
+              fontSize: window.innerWidth <= 480 ? '18px' : window.innerWidth <= 768 ? '24px' : '64px',
               fontWeight: '700', 
               color: 'white', 
               margin: 0, 
-              letterSpacing: window.innerWidth <= 768 ? '1px' : '3px',
-              textShadow: '3px 3px 6px rgba(0,0,0,0.7)',
+              letterSpacing: window.innerWidth <= 768 ? '0.5px' : '3px',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
               fontFamily: '"Noto Sans KR", sans-serif',
-              lineHeight: '1.2'
+              lineHeight: '1.1',
+              whiteSpace: window.innerWidth <= 480 ? 'nowrap' : 'normal'
             }}>
               깡통의 사진 갤러리
             </h1>
@@ -68,21 +69,26 @@ function App() {
           {/* 햄버거 메뉴 (우상단) */}
           <nav style={{ 
             position: 'absolute', 
-            top: window.innerWidth <= 768 ? '15px' : '20px', 
-            right: window.innerWidth <= 768 ? '20px' : '40px' 
+            top: window.innerWidth <= 480 ? '20px' : window.innerWidth <= 768 ? '25px' : '20px', 
+            right: window.innerWidth <= 480 ? '16px' : window.innerWidth <= 768 ? '20px' : '40px' 
           }}>
             <button 
               id="hamburger-btn"
               style={{ 
-                fontSize: window.innerWidth <= 768 ? '36px' : '50px',
+                fontSize: window.innerWidth <= 480 ? '28px' : window.innerWidth <= 768 ? '32px' : '50px',
                 color: 'white', 
-                background: 'none', 
-                border: 'none', 
+                background: 'rgba(0,0,0,0.3)', 
+                border: '1px solid rgba(255,255,255,0.2)', 
                 cursor: 'pointer',
-                padding: window.innerWidth <= 768 ? '12px' : '16px',
-                borderRadius: '12px',
+                padding: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '12px' : '16px',
+                borderRadius: '8px',
                 transition: 'all 0.3s',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                minWidth: window.innerWidth <= 480 ? '44px' : '48px',
+                minHeight: window.innerWidth <= 480 ? '44px' : '48px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               onMouseEnter={(e) => {
                 e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
