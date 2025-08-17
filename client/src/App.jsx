@@ -26,7 +26,7 @@ function App() {
           right: 0, 
           height: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
           minHeight: '120px',
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.4) 100%)',
+          background: 'linear-gradient(180deg, rgba(255, 140, 0, 0.9) 0%, rgba(255, 165, 0, 0.8) 70%, rgba(255, 140, 0, 0.6) 100%)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
@@ -69,23 +69,23 @@ function App() {
           {/* 햄버거 메뉴 (우상단) */}
           <nav style={{ 
             position: 'absolute', 
-            top: window.innerWidth <= 480 ? '20px' : window.innerWidth <= 768 ? '25px' : '20px', 
-            right: window.innerWidth <= 480 ? '16px' : window.innerWidth <= 768 ? '20px' : '40px' 
+            top: window.innerWidth <= 480 ? '15px' : window.innerWidth <= 768 ? '20px' : '15px', 
+            right: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '15px' : '30px' 
           }}>
             <button 
               id="hamburger-btn"
               style={{ 
-                fontSize: window.innerWidth <= 480 ? '56px' : window.innerWidth <= 768 ? '64px' : '100px',
+                fontSize: window.innerWidth <= 480 ? '32px' : window.innerWidth <= 768 ? '40px' : '60px',
                 color: 'white', 
                 background: 'rgba(0,0,0,0.3)', 
                 border: '1px solid rgba(255,255,255,0.2)', 
                 cursor: 'pointer',
-                padding: window.innerWidth <= 480 ? '20px' : window.innerWidth <= 768 ? '24px' : '32px',
-                borderRadius: '12px',
+                padding: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '16px' : '20px',
+                borderRadius: '8px',
                 transition: 'all 0.3s',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                minWidth: window.innerWidth <= 480 ? '88px' : '96px',
-                minHeight: window.innerWidth <= 480 ? '88px' : '96px',
+                minWidth: window.innerWidth <= 480 ? '56px' : '64px',
+                minHeight: window.innerWidth <= 480 ? '56px' : '64px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'

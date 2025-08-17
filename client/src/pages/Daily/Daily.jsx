@@ -864,23 +864,23 @@ function Daily() {
               </div>
             </div>
 
-            {/* 이전 버튼 */}
-            {currentImageIndex > 0 && (
+            {/* 이전 버튼 (PC에서만 표시) */}
+            {currentImageIndex > 0 && window.innerWidth > 480 && (
               <button
                 onClick={prevImage}
                 style={{
                   position: 'absolute',
-                  left: window.innerWidth <= 480 ? '10px' : '20px',
+                  left: '20px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'rgba(255,255,255,0.2)',
                   border: 'none',
                   color: 'white',
-                  fontSize: window.innerWidth <= 480 ? '24px' : '32px',
+                  fontSize: '32px',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: window.innerWidth <= 480 ? '40px' : '50px',
-                  height: window.innerWidth <= 480 ? '40px' : '50px',
+                  width: '50px',
+                  height: '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -894,23 +894,23 @@ function Daily() {
               </button>
             )}
 
-            {/* 다음 버튼 */}
-            {currentImageIndex < currentCollection.images.length - 1 && (
+            {/* 다음 버튼 (PC에서만 표시) */}
+            {currentImageIndex < currentCollection.images.length - 1 && window.innerWidth > 480 && (
               <button
                 onClick={nextImage}
                 style={{
                   position: 'absolute',
-                  right: window.innerWidth <= 480 ? '10px' : '20px',
+                  right: '20px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'rgba(255,255,255,0.2)',
                   border: 'none',
                   color: 'white',
-                  fontSize: window.innerWidth <= 480 ? '24px' : '32px',
+                  fontSize: '32px',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: window.innerWidth <= 480 ? '40px' : '50px',
-                  height: window.innerWidth <= 480 ? '40px' : '50px',
+                  width: '50px',
+                  height: '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -985,6 +985,32 @@ function Daily() {
                    </>
                  )}
                  {isAdminMode && <span>Delete 삭제</span>}
+               </div>
+               
+               {/* 종료 버튼 */}
+               <div style={{ 
+                 display: 'flex', 
+                 justifyContent: 'center', 
+                 marginTop: '12px' 
+               }}>
+                 <button
+                   onClick={closeModal}
+                   style={{
+                     backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                     border: 'none',
+                     color: 'white',
+                     padding: window.innerWidth <= 480 ? '8px 16px' : '10px 20px',
+                     borderRadius: '20px',
+                     fontSize: window.innerWidth <= 480 ? '14px' : '16px',
+                     cursor: 'pointer',
+                     transition: 'all 0.3s',
+                     fontWeight: '600'
+                   }}
+                   onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 1)'}
+                   onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.8)'}
+                 >
+                   ❌ 갤러리 종료
+                 </button>
                </div>
               
               {isAdminMode && (
