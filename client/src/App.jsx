@@ -164,7 +164,7 @@ function App() {
 
         {/* 페이지 라우팅 */}
         <Routes>
-          <Route exact path="/" element={<HeroSlide />} />
+          <Route path="/" element={<HeroSlide />} />
           <Route path="/archive" element={<Archive />} />
           <Route path="/daily" element={<Daily />} />
           <Route path="/theme" element={<Theme />} />
