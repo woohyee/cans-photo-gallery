@@ -1,5 +1,5 @@
 // 📄 src/pages/Daily/Daily.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function Daily() {
   const [selectedDate, setSelectedDate] = useState('all');
@@ -11,7 +11,11 @@ function Daily() {
   const [imageErrors, setImageErrors] = useState(new Set());
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
-  const [expandedCollections, setExpandedCollections] = useState(new Set());
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(false);
+  const [autoScrollInterval, setAutoScrollInterval] = useState(null);
+  const [autoScrollSpeed, setAutoScrollSpeed] = useState(3000); // 3초마다
+  const scrollRef = useRef(null);
 
   // 실제 아카이브 폴더 기반 데이터
   const archiveDates = [
@@ -171,6 +175,7 @@ function Daily() {
     setCurrentCollection(collection);
     setCurrentImageIndex(imageIndex);
     setModalImage(collection.images[imageIndex]);
+    setIsFullscreen(true);
   };
 
   // 이미지 모달 닫기
@@ -178,6 +183,8 @@ function Daily() {
     setModalImage(null);
     setCurrentCollection(null);
     setCurrentImageIndex(0);
+    setIsFullscreen(false);
+    stopAutoScroll();
   };
 
   // 다음 이미지
@@ -198,9 +205,44 @@ function Daily() {
     }
   };
 
+  // 자동 스크롤 시작
+  const startAutoScroll = () => {
+    if (autoScrollInterval) return;
+    
+    const interval = setInterval(() => {
+      if (currentCollection && currentImageIndex < currentCollection.images.length - 1) {
+        nextImage();
+      } else if (currentCollection && currentImageIndex >= currentCollection.images.length - 1) {
+        // 마지막 이미지에 도달하면 처음으로
+        setCurrentImageIndex(0);
+        setModalImage(currentCollection.images[0]);
+      }
+    }, autoScrollSpeed);
+    
+    setAutoScrollInterval(interval);
+    setAutoScroll(true);
+  };
+
+  // 자동 스크롤 중지
+  const stopAutoScroll = () => {
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      setAutoScrollInterval(null);
+    }
+    setAutoScroll(false);
+  };
+
+  // 자동 스크롤 토글
+  const toggleAutoScroll = () => {
+    if (autoScroll) {
+      stopAutoScroll();
+    } else {
+      startAutoScroll();
+    }
+  };
+
   // 관리자 인증
   const handleAdminLogin = () => {
-    // 간단한 패스워드 체크 (실제 운영에서는 더 안전한 방법 사용)
     if (adminPassword === 'canphoto2024') {
       setIsAdminMode(true);
       setShowAdminLogin(false);
@@ -227,26 +269,12 @@ function Daily() {
       const imageKey = `${collection.folder}/${collection.images[imageIndex]}`;
       setImageErrors(prev => new Set([...prev, imageKey]));
       
-      // 모달이 열려있다면 닫기
       if (modalImage) {
         closeModal();
       }
       
       alert('사진이 삭제되었습니다.');
     }
-  };
-
-  // 컬렉션 확장/축소
-  const toggleCollection = (collectionId) => {
-    setExpandedCollections(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(collectionId)) {
-        newSet.delete(collectionId);
-      } else {
-        newSet.add(collectionId);
-      }
-      return newSet;
-    });
   };
 
   // 키보드 이벤트
@@ -256,6 +284,10 @@ function Daily() {
         if (e.key === 'ArrowRight') nextImage();
         if (e.key === 'ArrowLeft') prevImage();
         if (e.key === 'Escape') closeModal();
+        if (e.key === ' ' || e.key === 'Space') {
+          e.preventDefault();
+          toggleAutoScroll();
+        }
         if (e.key === 'Delete' && isAdminMode) {
           handleDeleteImage(currentCollection, currentImageIndex);
         }
@@ -272,7 +304,16 @@ function Daily() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [modalImage, currentImageIndex, currentCollection, isAdminMode]);
+  }, [modalImage, currentImageIndex, currentCollection, isAdminMode, autoScroll]);
+
+  // 컴포넌트 언마운트 시 자동 스크롤 정리
+  useEffect(() => {
+    return () => {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+      }
+    };
+  }, [autoScrollInterval]);
 
   return (
     <div style={{ 
@@ -467,7 +508,7 @@ function Daily() {
               
               {/* 이미지 그리드 */}
               <div style={{ padding: window.innerWidth <= 480 ? '12px' : '20px' }}>
-                {/* 이미지 개수 및 더보기 정보 */}
+                {/* 이미지 개수 정보 */}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
@@ -482,30 +523,12 @@ function Daily() {
                   }}>
                     📸 총 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장
                   </span>
-                  {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length > 6 && (
-                    <button
-                      onClick={() => toggleCollection(collection.id)}
-                      style={{
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        border: '1px solid rgba(59, 130, 246, 0.3)',
-                        color: '#60a5fa',
-                        padding: window.innerWidth <= 480 ? '4px 8px' : '6px 12px',
-                        borderRadius: '12px',
-                        fontSize: window.innerWidth <= 480 ? '11px' : '12px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s',
-                        whiteSpace: 'nowrap'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
-                      }}
-                    >
-                      {expandedCollections.has(collection.id) ? '📤 접기' : '📥 모두보기'}
-                    </button>
-                  )}
+                  <span style={{ 
+                    fontSize: window.innerWidth <= 480 ? '11px' : '12px', 
+                    color: '#6b7280' 
+                  }}>
+                    💡 사진을 클릭하면 전체화면으로 보기
+                  </span>
                 </div>
 
                 <div style={{ 
@@ -515,7 +538,6 @@ function Daily() {
                 }}>
                   {collection.images
                     .filter(img => !imageErrors.has(`${collection.folder}/${img}`))
-                    .slice(0, expandedCollections.has(collection.id) ? undefined : 6)
                     .map((image, index) => {
                       const originalIndex = collection.images.indexOf(image);
                       
@@ -525,8 +547,22 @@ function Daily() {
                           overflow: 'hidden', 
                           borderRadius: '8px',
                           backgroundColor: 'rgba(255,255,255,0.05)',
-                          position: 'relative'
-                        }}>
+                          position: 'relative',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.querySelector('.zoom-icon').style.opacity = '1';
+                          if (isAdminMode) {
+                            e.target.querySelector('.delete-btn').style.opacity = '1';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.querySelector('.zoom-icon').style.opacity = '0';
+                          if (isAdminMode) {
+                            e.target.querySelector('.delete-btn').style.opacity = '0';
+                          }
+                        }}
+                        >
                           <img
                             src={`/images/images/archive/${collection.folder}/${image}`}
                             alt={`${collection.title} - ${originalIndex + 1}`}
@@ -534,8 +570,7 @@ function Daily() {
                               width: '100%', 
                               height: '100%', 
                               objectFit: 'cover',
-                              transition: 'transform 0.3s',
-                              cursor: 'pointer'
+                              transition: 'transform 0.3s'
                             }}
                             onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
                             onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
@@ -641,18 +676,7 @@ function Daily() {
                   color: '#9ca3af' 
                 }}>
                   <span>❤️ {collection.likes}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>📸 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장</span>
-                    {!expandedCollections.has(collection.id) && 
-                     collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length > 6 && (
-                      <span style={{ 
-                        fontSize: window.innerWidth <= 480 ? '11px' : '12px', 
-                        color: '#6b7280' 
-                      }}>
-                        (+{collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length - 6}장)
-                      </span>
-                    )}
-                  </div>
+                  <span>📸 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장</span>
                 </div>
               </div>
             </div>
@@ -671,7 +695,7 @@ function Daily() {
         )}
       </div>
 
-      {/* 이미지 모달 */}
+      {/* 전체화면 이미지 모달 */}
       {modalImage && currentCollection && (
         <div 
           style={{
@@ -680,7 +704,7 @@ function Daily() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.95)',
+            backgroundColor: 'rgba(0,0,0,0.98)',
             zIndex: 2000,
             display: 'flex',
             alignItems: 'center',
@@ -692,26 +716,71 @@ function Daily() {
           {/* 모달 컨텐츠 */}
           <div style={{ 
             position: 'relative', 
-            maxWidth: '95vw', 
-            maxHeight: '95vh' 
+            maxWidth: '100vw', 
+            maxHeight: '100vh',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }} onClick={(e) => e.stopPropagation()}>
-            {/* 닫기 버튼 */}
-            <button
-              onClick={closeModal}
-              style={{
-                position: 'absolute',
-                top: window.innerWidth <= 480 ? '-40px' : '-50px',
-                right: '0',
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: 'white',
-                fontSize: window.innerWidth <= 480 ? '24px' : '32px',
-                cursor: 'pointer',
-                zIndex: 2001
-              }}
-            >
-              ✕
-            </button>
+            
+            {/* 상단 컨트롤 바 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              padding: window.innerWidth <= 480 ? '12px' : '20px',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%)',
+              zIndex: 2002,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div style={{ color: 'white', fontSize: window.innerWidth <= 480 ? '14px' : '18px', fontWeight: '500' }}>
+                {currentCollection.title}
+              </div>
+              
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {/* 자동 스크롤 버튼 */}
+                <button
+                  onClick={toggleAutoScroll}
+                  style={{
+                    backgroundColor: autoScroll ? 'rgba(59, 130, 246, 0.8)' : 'rgba(255,255,255,0.2)',
+                    border: 'none',
+                    color: 'white',
+                    padding: window.innerWidth <= 480 ? '6px 10px' : '8px 12px',
+                    borderRadius: '8px',
+                    fontSize: window.innerWidth <= 480 ? '12px' : '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  {autoScroll ? '⏸️ 정지' : '▶️ 자동'}
+                </button>
+                
+                {/* 닫기 버튼 */}
+                <button
+                  onClick={closeModal}
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    border: 'none',
+                    color: 'white',
+                    fontSize: window.innerWidth <= 480 ? '18px' : '24px',
+                    cursor: 'pointer',
+                    borderRadius: '8px',
+                    width: window.innerWidth <= 480 ? '32px' : '40px',
+                    height: window.innerWidth <= 480 ? '32px' : '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
 
             {/* 이전 버튼 */}
             {currentImageIndex > 0 && (
@@ -719,7 +788,7 @@ function Daily() {
                 onClick={prevImage}
                 style={{
                   position: 'absolute',
-                  left: window.innerWidth <= 480 ? '-40px' : '-60px',
+                  left: window.innerWidth <= 480 ? '10px' : '20px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'rgba(255,255,255,0.2)',
@@ -728,12 +797,13 @@ function Daily() {
                   fontSize: window.innerWidth <= 480 ? '24px' : '32px',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: window.innerWidth <= 480 ? '36px' : '50px',
-                  height: window.innerWidth <= 480 ? '36px' : '50px',
+                  width: window.innerWidth <= 480 ? '40px' : '50px',
+                  height: window.innerWidth <= 480 ? '40px' : '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  transition: 'background-color 0.3s'
+                  transition: 'background-color 0.3s',
+                  zIndex: 2001
                 }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.3)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.2)'}
@@ -748,7 +818,7 @@ function Daily() {
                 onClick={nextImage}
                 style={{
                   position: 'absolute',
-                  right: window.innerWidth <= 480 ? '-40px' : '-60px',
+                  right: window.innerWidth <= 480 ? '10px' : '20px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'rgba(255,255,255,0.2)',
@@ -757,12 +827,13 @@ function Daily() {
                   fontSize: window.innerWidth <= 480 ? '24px' : '32px',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: window.innerWidth <= 480 ? '36px' : '50px',
-                  height: window.innerWidth <= 480 ? '36px' : '50px',
+                  width: window.innerWidth <= 480 ? '40px' : '50px',
+                  height: window.innerWidth <= 480 ? '40px' : '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  transition: 'background-color 0.3s'
+                  transition: 'background-color 0.3s',
+                  zIndex: 2001
                 }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.3)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.2)'}
@@ -783,29 +854,41 @@ function Daily() {
               }}
             />
 
-            {/* 이미지 정보 */}
+            {/* 하단 정보 바 */}
             <div style={{
               position: 'absolute',
-              bottom: window.innerWidth <= 480 ? '-60px' : '-80px',
+              bottom: 0,
               left: 0,
               right: 0,
+              padding: window.innerWidth <= 480 ? '12px' : '20px',
+              background: 'linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%)',
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              zIndex: 2002
             }}>
-              <p style={{ 
-                margin: '8px 0', 
-                fontSize: window.innerWidth <= 480 ? '14px' : '18px', 
-                fontWeight: '500' 
-              }}>
-                {currentCollection.title}
-              </p>
               <p style={{ 
                 margin: '4px 0', 
                 fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
                 color: '#9ca3af' 
               }}>
-                {currentImageIndex + 1} / {currentCollection.images.length} • {currentCollection.date}
+                {currentImageIndex + 1} / {currentCollection.images.length} • {currentCollection.date} • {currentCollection.location}
               </p>
+              
+              {/* 키보드 단축키 안내 */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                gap: window.innerWidth <= 480 ? '8px' : '16px', 
+                marginTop: '8px',
+                fontSize: window.innerWidth <= 480 ? '10px' : '12px',
+                color: '#6b7280'
+              }}>
+                <span>← → 이동</span>
+                <span>Space 자동재생</span>
+                <span>ESC 닫기</span>
+                {isAdminMode && <span>Delete 삭제</span>}
+              </div>
+              
               {isAdminMode && (
                 <button
                   onClick={() => handleDeleteImage(currentCollection, currentImageIndex)}
