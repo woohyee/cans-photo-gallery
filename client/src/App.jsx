@@ -24,23 +24,25 @@ function App() {
           top: 0, 
           left: 0, 
           right: 0, 
-          height: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
-          minHeight: '120px',
+          height: window.innerWidth <= 480 ? '80px' : window.innerWidth <= 768 ? '100px' : '15vh',
+          minHeight: '80px',
           background: 'linear-gradient(180deg, rgba(255, 140, 0, 0.9) 0%, rgba(255, 165, 0, 0.8) 70%, rgba(255, 140, 0, 0.6) 100%)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: window.innerWidth <= 768 ? '16px' : '0 40px'
+          padding: window.innerWidth <= 768 ? '12px' : '0 40px'
         }}>
           {/* 로고 + 타이틀 (중앙) */}
           <Link to="/" style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '16px' : '32px', 
+            gap: window.innerWidth <= 480 ? '8px' : window.innerWidth <= 768 ? '12px' : '20px', 
             textDecoration: 'none',
             flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
-            textAlign: 'center'
+            textAlign: 'center',
+            position: 'relative',
+            top: window.innerWidth <= 480 ? '-8px' : window.innerWidth <= 768 ? '-12px' : '-15px'
           }}>
             <img 
               src="/images/logo/logo.png" 
@@ -52,7 +54,7 @@ function App() {
               }}
             />
             <h1 style={{ 
-              fontSize: window.innerWidth <= 480 ? '18px' : window.innerWidth <= 768 ? '24px' : '64px',
+              fontSize: window.innerWidth <= 480 ? '22px' : window.innerWidth <= 768 ? '28px' : '72px',
               fontWeight: '700', 
               color: 'white', 
               margin: 0, 
@@ -77,8 +79,8 @@ function App() {
               style={{ 
                 fontSize: window.innerWidth <= 480 ? '32px' : window.innerWidth <= 768 ? '40px' : '60px',
                 color: 'white', 
-                background: 'rgba(0,0,0,0.3)', 
-                border: '1px solid rgba(255,255,255,0.2)', 
+                background: 'rgba(255, 140, 0, 0.8)', 
+                border: '1px solid rgba(255,255,255,0.3)', 
                 cursor: 'pointer',
                 padding: window.innerWidth <= 480 ? '12px' : window.innerWidth <= 768 ? '16px' : '20px',
                 borderRadius: '8px',
@@ -91,11 +93,11 @@ function App() {
                 justifyContent: 'center'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 140, 0, 1)';
                 e.target.style.transform = 'scale(1.1)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent';
+                e.target.style.backgroundColor = 'rgba(255, 140, 0, 0.8)';
                 e.target.style.transform = 'scale(1)';
               }}
               onClick={(e) => {
