@@ -46,8 +46,8 @@ function App() {
               src="/images/logo/logo.png" 
               alt="Can Photo" 
               style={{ 
-                height: window.innerWidth <= 480 ? '50px' : window.innerWidth <= 768 ? '60px' : '240px', 
-                width: window.innerWidth <= 480 ? '50px' : window.innerWidth <= 768 ? '60px' : '240px',
+                height: window.innerWidth <= 480 ? '150px' : window.innerWidth <= 768 ? '180px' : '720px', 
+                width: window.innerWidth <= 480 ? '150px' : window.innerWidth <= 768 ? '180px' : '720px',
                 filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
               }}
             />
@@ -75,17 +75,17 @@ function App() {
             <button 
               id="hamburger-btn"
               style={{ 
-                fontSize: window.innerWidth <= 480 ? '28px' : window.innerWidth <= 768 ? '32px' : '50px',
+                fontSize: window.innerWidth <= 480 ? '56px' : window.innerWidth <= 768 ? '64px' : '100px',
                 color: 'white', 
                 background: 'rgba(0,0,0,0.3)', 
                 border: '1px solid rgba(255,255,255,0.2)', 
                 cursor: 'pointer',
-                padding: window.innerWidth <= 480 ? '10px' : window.innerWidth <= 768 ? '12px' : '16px',
-                borderRadius: '8px',
+                padding: window.innerWidth <= 480 ? '20px' : window.innerWidth <= 768 ? '24px' : '32px',
+                borderRadius: '12px',
                 transition: 'all 0.3s',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                minWidth: window.innerWidth <= 480 ? '44px' : '48px',
-                minHeight: window.innerWidth <= 480 ? '44px' : '48px',
+                minWidth: window.innerWidth <= 480 ? '88px' : '96px',
+                minHeight: window.innerWidth <= 480 ? '88px' : '96px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
