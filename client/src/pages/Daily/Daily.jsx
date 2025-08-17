@@ -279,36 +279,44 @@ function Daily() {
       minHeight: '100vh', 
       backgroundColor: 'black', 
       color: 'white', 
-      paddingTop: window.innerWidth <= 480 ? '140px' : window.innerWidth <= 768 ? '160px' : '20vh',
-      padding: window.innerWidth <= 480 ? '140px 16px 32px 16px' : window.innerWidth <= 768 ? '160px 16px 32px 16px' : '20vh 32px 32px 32px'
+      paddingTop: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
+      padding: window.innerWidth <= 480 ? '120px 12px 20px 12px' : window.innerWidth <= 768 ? '140px 16px 24px 16px' : '20vh 32px 32px 32px',
+      overflowX: 'hidden'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* 헤더 섹션 */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between', 
-          marginBottom: window.innerWidth <= 480 ? '20px' : '32px',
+          marginBottom: window.innerWidth <= 480 ? '16px' : '24px',
           flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
           gap: window.innerWidth <= 480 ? '12px' : '0'
         }}>
           <h1 style={{ 
-            fontSize: window.innerWidth <= 480 ? '24px' : window.innerWidth <= 768 ? '28px' : '36px', 
+            fontSize: window.innerWidth <= 480 ? '20px' : window.innerWidth <= 768 ? '24px' : '32px', 
             fontWeight: '600', 
             margin: 0,
-            fontFamily: '"Noto Sans KR", sans-serif'
+            fontFamily: '"Noto Sans KR", sans-serif',
+            textAlign: window.innerWidth <= 480 ? 'center' : 'left'
           }}>
             일자별 갤러리
           </h1>
           
           {/* 관리자 모드 표시 및 토글 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            flexDirection: window.innerWidth <= 480 ? 'column' : 'row'
+          }}>
             {isAdminMode && (
               <span style={{ 
                 backgroundColor: 'rgba(239, 68, 68, 0.2)', 
                 color: '#ef4444', 
-                padding: '6px 12px', 
-                borderRadius: '20px', 
-                fontSize: '14px',
+                padding: '4px 8px', 
+                borderRadius: '12px', 
+                fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                 fontWeight: '600'
               }}>
                 🔧 관리자 모드
@@ -320,11 +328,12 @@ function Daily() {
                 backgroundColor: isAdminMode ? 'rgba(239, 68, 68, 0.2)' : 'rgba(75, 85, 99, 0.3)',
                 color: isAdminMode ? '#ef4444' : '#9ca3af',
                 border: 'none',
-                padding: '8px 16px',
-                borderRadius: '20px',
-                fontSize: '14px',
+                padding: window.innerWidth <= 480 ? '6px 12px' : '8px 16px',
+                borderRadius: '16px',
+                fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                 cursor: 'pointer',
-                transition: 'all 0.3s'
+                transition: 'all 0.3s',
+                whiteSpace: 'nowrap'
               }}
             >
               {isAdminMode ? '🔓 관리자 해제' : '🔒 관리자 모드'}
@@ -333,30 +342,36 @@ function Daily() {
         </div>
         
         {/* 날짜 필터 (가로 스크롤) */}
-        <div style={{ marginBottom: window.innerWidth <= 480 ? '24px' : '48px', overflow: 'hidden' }}>
+        <div style={{ 
+          marginBottom: window.innerWidth <= 480 ? '20px' : '32px', 
+          overflow: 'hidden',
+          paddingBottom: '8px'
+        }}>
           <div style={{ 
             display: 'flex', 
-            gap: window.innerWidth <= 480 ? '8px' : '16px', 
-            paddingBottom: '16px',
+            gap: window.innerWidth <= 480 ? '6px' : '12px', 
+            paddingBottom: '8px',
             overflowX: 'auto',
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(255,255,255,0.3) transparent',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            msOverflowStyle: 'none'
           }}>
             <button
               onClick={() => setSelectedDate('all')}
               style={{
-                padding: window.innerWidth <= 480 ? '12px 20px' : '16px 28px',
-                borderRadius: window.innerWidth <= 480 ? '20px' : '30px',
-                fontSize: window.innerWidth <= 480 ? '14px' : '18px',
+                padding: window.innerWidth <= 480 ? '8px 12px' : '12px 20px',
+                borderRadius: window.innerWidth <= 480 ? '16px' : '20px',
+                fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                 border: 'none',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
                 backgroundColor: selectedDate === 'all' ? 'white' : 'rgba(255,255,255,0.1)',
                 color: selectedDate === 'all' ? 'black' : 'white',
                 whiteSpace: 'nowrap',
-                minWidth: window.innerWidth <= 480 ? '80px' : '120px',
-                fontWeight: selectedDate === 'all' ? '600' : '400'
+                minWidth: window.innerWidth <= 480 ? '60px' : '80px',
+                fontWeight: selectedDate === 'all' ? '600' : '400',
+                flexShrink: 0
               }}
             >
               📋 전체
@@ -366,17 +381,18 @@ function Daily() {
                 key={date}
                 onClick={() => setSelectedDate(date)}
                 style={{
-                  padding: window.innerWidth <= 480 ? '12px 16px' : '16px 28px',
-                  borderRadius: window.innerWidth <= 480 ? '20px' : '30px',
-                  fontSize: window.innerWidth <= 480 ? '14px' : '18px',
+                  padding: window.innerWidth <= 480 ? '8px 10px' : '12px 16px',
+                  borderRadius: window.innerWidth <= 480 ? '16px' : '20px',
+                  fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.3s',
                   backgroundColor: selectedDate === date ? 'white' : 'rgba(255,255,255,0.1)',
                   color: selectedDate === date ? 'black' : 'white',
                   whiteSpace: 'nowrap',
-                  minWidth: window.innerWidth <= 480 ? '120px' : '160px',
-                  fontWeight: selectedDate === date ? '600' : '400'
+                  minWidth: window.innerWidth <= 480 ? '100px' : '120px',
+                  fontWeight: selectedDate === date ? '600' : '400',
+                  flexShrink: 0
                 }}
               >
                 📅 {date}
@@ -386,7 +402,12 @@ function Daily() {
         </div>
 
         {/* 타임라인 스타일 결과 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: window.innerWidth <= 480 ? '20px' : '32px' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: window.innerWidth <= 480 ? '16px' : '24px',
+          paddingBottom: window.innerWidth <= 480 ? '20px' : '32px'
+        }}>
           {filteredCollections.map((collection) => (
             <div key={collection.id} style={{ 
               backgroundColor: 'rgba(255,255,255,0.05)', 
@@ -396,7 +417,7 @@ function Daily() {
             }}>
               {/* 날짜 헤더 */}
               <div style={{ 
-                padding: window.innerWidth <= 480 ? '16px' : '24px', 
+                padding: window.innerWidth <= 480 ? '12px' : '20px', 
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
                 backgroundColor: 'rgba(255,255,255,0.05)'
               }}>
@@ -404,12 +425,12 @@ function Daily() {
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: window.innerWidth <= 480 ? 'flex-start' : 'center', 
-                  marginBottom: '12px',
+                  marginBottom: '8px',
                   flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
-                  gap: window.innerWidth <= 480 ? '8px' : '0'
+                  gap: window.innerWidth <= 480 ? '6px' : '0'
                 }}>
                   <h2 style={{ 
-                    fontSize: window.innerWidth <= 480 ? '18px' : '24px', 
+                    fontSize: window.innerWidth <= 480 ? '16px' : '20px', 
                     fontWeight: '500', 
                     margin: 0,
                     fontFamily: '"Noto Sans KR", sans-serif'
@@ -417,25 +438,25 @@ function Daily() {
                     {collection.title}
                   </h2>
                   <span style={{ 
-                    fontSize: window.innerWidth <= 480 ? '14px' : '18px', 
+                    fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
                     color: '#60a5fa',
                     backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                    padding: window.innerWidth <= 480 ? '4px 12px' : '6px 16px',
-                    borderRadius: '20px',
+                    padding: window.innerWidth <= 480 ? '3px 8px' : '4px 12px',
+                    borderRadius: '12px',
                     alignSelf: window.innerWidth <= 480 ? 'flex-start' : 'auto'
                   }}>
                     📅 {collection.date}
                   </span>
                 </div>
                 <p style={{ 
-                  fontSize: window.innerWidth <= 480 ? '14px' : '16px', 
+                  fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
                   color: '#9ca3af', 
-                  margin: '8px 0' 
+                  margin: '4px 0' 
                 }}>
                   📍 {collection.location}
                 </p>
                 <p style={{ 
-                  fontSize: window.innerWidth <= 480 ? '14px' : '16px', 
+                  fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
                   color: '#d1d5db', 
                   margin: 0,
                   lineHeight: '1.4'
@@ -445,31 +466,35 @@ function Daily() {
               </div>
               
               {/* 이미지 그리드 */}
-              <div style={{ padding: window.innerWidth <= 480 ? '16px' : '24px' }}>
+              <div style={{ padding: window.innerWidth <= 480 ? '12px' : '20px' }}>
                 {/* 이미지 개수 및 더보기 정보 */}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'center', 
-                  marginBottom: window.innerWidth <= 480 ? '12px' : '16px',
+                  marginBottom: window.innerWidth <= 480 ? '8px' : '12px',
                   flexDirection: window.innerWidth <= 480 ? 'column' : 'row',
-                  gap: window.innerWidth <= 480 ? '8px' : '0'
+                  gap: window.innerWidth <= 480 ? '6px' : '0'
                 }}>
-                  <span style={{ fontSize: '14px', color: '#9ca3af' }}>
+                  <span style={{ 
+                    fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
+                    color: '#9ca3af' 
+                  }}>
                     📸 총 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장
                   </span>
-                  {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length > 10 && (
+                  {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length > 6 && (
                     <button
                       onClick={() => toggleCollection(collection.id)}
                       style={{
                         backgroundColor: 'rgba(59, 130, 246, 0.2)',
                         border: '1px solid rgba(59, 130, 246, 0.3)',
                         color: '#60a5fa',
-                        padding: '6px 12px',
-                        borderRadius: '16px',
-                        fontSize: '12px',
+                        padding: window.innerWidth <= 480 ? '4px 8px' : '6px 12px',
+                        borderRadius: '12px',
+                        fontSize: window.innerWidth <= 480 ? '11px' : '12px',
                         cursor: 'pointer',
-                        transition: 'all 0.3s'
+                        transition: 'all 0.3s',
+                        whiteSpace: 'nowrap'
                       }}
                       onMouseEnter={(e) => {
                         e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
@@ -485,12 +510,12 @@ function Daily() {
 
                 <div style={{ 
                   display: 'grid', 
-                  gridTemplateColumns: window.innerWidth <= 480 ? 'repeat(2, 1fr)' : window.innerWidth <= 768 ? 'repeat(3, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))', 
-                  gap: window.innerWidth <= 768 ? '12px' : '16px' 
+                  gridTemplateColumns: window.innerWidth <= 480 ? 'repeat(2, 1fr)' : window.innerWidth <= 768 ? 'repeat(3, 1fr)' : 'repeat(auto-fit, minmax(180px, 1fr))', 
+                  gap: window.innerWidth <= 480 ? '8px' : window.innerWidth <= 768 ? '10px' : '12px' 
                 }}>
                   {collection.images
                     .filter(img => !imageErrors.has(`${collection.folder}/${img}`))
-                    .slice(0, expandedCollections.has(collection.id) ? undefined : 10)
+                    .slice(0, expandedCollections.has(collection.id) ? undefined : 6)
                     .map((image, index) => {
                       const originalIndex = collection.images.indexOf(image);
                       
@@ -524,16 +549,16 @@ function Daily() {
                           {/* 확대 아이콘 */}
                           <div style={{
                             position: 'absolute',
-                            top: '8px',
-                            right: isAdminMode ? '44px' : '8px',
+                            top: '4px',
+                            right: isAdminMode ? '36px' : '4px',
                             backgroundColor: 'rgba(0,0,0,0.6)',
                             borderRadius: '50%',
-                            width: '32px',
-                            height: '32px',
+                            width: window.innerWidth <= 480 ? '24px' : '28px',
+                            height: window.innerWidth <= 480 ? '24px' : '28px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '16px',
+                            fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                             opacity: 0,
                             transition: 'opacity 0.3s',
                             pointerEvents: 'none'
@@ -552,17 +577,17 @@ function Daily() {
                               }}
                               style={{
                                 position: 'absolute',
-                                top: '8px',
-                                right: '8px',
+                                top: '4px',
+                                right: '4px',
                                 backgroundColor: 'rgba(239, 68, 68, 0.8)',
                                 border: 'none',
                                 borderRadius: '50%',
-                                width: '32px',
-                                height: '32px',
+                                width: window.innerWidth <= 480 ? '24px' : '28px',
+                                height: window.innerWidth <= 480 ? '24px' : '28px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '16px',
+                                fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                                 color: 'white',
                                 cursor: 'pointer',
                                 opacity: 0,
@@ -587,28 +612,44 @@ function Daily() {
               </div>
               
               {/* 태그 및 상호작용 */}
-              <div style={{ padding: '0 24px 24px 24px' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+              <div style={{ 
+                padding: window.innerWidth <= 480 ? '0 12px 12px 12px' : '0 20px 20px 20px' 
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: window.innerWidth <= 480 ? '6px' : '8px', 
+                  marginBottom: window.innerWidth <= 480 ? '12px' : '16px' 
+                }}>
                   {collection.tags.map((tag, index) => (
                     <span key={index} style={{ 
-                      fontSize: '14px', 
+                      fontSize: window.innerWidth <= 480 ? '11px' : '12px', 
                       backgroundColor: 'rgba(255,255,255,0.1)', 
-                      padding: '6px 12px', 
-                      borderRadius: '16px',
+                      padding: window.innerWidth <= 480 ? '4px 8px' : '4px 10px', 
+                      borderRadius: '12px',
                       color: '#e5e7eb'
                     }}>
                       #{tag}
                     </span>
                   ))}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '16px', color: '#9ca3af' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between', 
+                  fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
+                  color: '#9ca3af' 
+                }}>
                   <span>❤️ {collection.likes}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📸 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장</span>
                     {!expandedCollections.has(collection.id) && 
-                     collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length > 10 && (
-                      <span style={{ fontSize: '14px', color: '#6b7280' }}>
-                        ({collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length - 10}장 숨김)
+                     collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length > 6 && (
+                      <span style={{ 
+                        fontSize: window.innerWidth <= 480 ? '11px' : '12px', 
+                        color: '#6b7280' 
+                      }}>
+                        (+{collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length - 6}장)
                       </span>
                     )}
                   </div>
@@ -619,7 +660,12 @@ function Daily() {
         </div>
 
         {filteredCollections.length === 0 && (
-          <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: '48px', fontSize: '18px' }}>
+          <div style={{ 
+            textAlign: 'center', 
+            color: '#9ca3af', 
+            marginTop: '48px', 
+            fontSize: window.innerWidth <= 480 ? '16px' : '18px' 
+          }}>
             선택한 날짜의 사진이 없습니다.
           </div>
         )}
@@ -639,23 +685,27 @@ function Daily() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '20px'
+            padding: window.innerWidth <= 480 ? '10px' : '20px'
           }}
           onClick={closeModal}
         >
           {/* 모달 컨텐츠 */}
-          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
+          <div style={{ 
+            position: 'relative', 
+            maxWidth: '95vw', 
+            maxHeight: '95vh' 
+          }} onClick={(e) => e.stopPropagation()}>
             {/* 닫기 버튼 */}
             <button
               onClick={closeModal}
               style={{
                 position: 'absolute',
-                top: '-50px',
+                top: window.innerWidth <= 480 ? '-40px' : '-50px',
                 right: '0',
                 backgroundColor: 'transparent',
                 border: 'none',
                 color: 'white',
-                fontSize: '32px',
+                fontSize: window.innerWidth <= 480 ? '24px' : '32px',
                 cursor: 'pointer',
                 zIndex: 2001
               }}
@@ -669,17 +719,17 @@ function Daily() {
                 onClick={prevImage}
                 style={{
                   position: 'absolute',
-                  left: '-60px',
+                  left: window.innerWidth <= 480 ? '-40px' : '-60px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'rgba(255,255,255,0.2)',
                   border: 'none',
                   color: 'white',
-                  fontSize: '32px',
+                  fontSize: window.innerWidth <= 480 ? '24px' : '32px',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
+                  width: window.innerWidth <= 480 ? '36px' : '50px',
+                  height: window.innerWidth <= 480 ? '36px' : '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -698,17 +748,17 @@ function Daily() {
                 onClick={nextImage}
                 style={{
                   position: 'absolute',
-                  right: '-60px',
+                  right: window.innerWidth <= 480 ? '-40px' : '-60px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   backgroundColor: 'rgba(255,255,255,0.2)',
                   border: 'none',
                   color: 'white',
-                  fontSize: '32px',
+                  fontSize: window.innerWidth <= 480 ? '24px' : '32px',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
+                  width: window.innerWidth <= 480 ? '36px' : '50px',
+                  height: window.innerWidth <= 480 ? '36px' : '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -736,16 +786,24 @@ function Daily() {
             {/* 이미지 정보 */}
             <div style={{
               position: 'absolute',
-              bottom: '-80px',
+              bottom: window.innerWidth <= 480 ? '-60px' : '-80px',
               left: 0,
               right: 0,
               color: 'white',
               textAlign: 'center'
             }}>
-              <p style={{ margin: '8px 0', fontSize: '18px', fontWeight: '500' }}>
+              <p style={{ 
+                margin: '8px 0', 
+                fontSize: window.innerWidth <= 480 ? '14px' : '18px', 
+                fontWeight: '500' 
+              }}>
                 {currentCollection.title}
               </p>
-              <p style={{ margin: '4px 0', fontSize: '14px', color: '#9ca3af' }}>
+              <p style={{ 
+                margin: '4px 0', 
+                fontSize: window.innerWidth <= 480 ? '12px' : '14px', 
+                color: '#9ca3af' 
+              }}>
                 {currentImageIndex + 1} / {currentCollection.images.length} • {currentCollection.date}
               </p>
               {isAdminMode && (
@@ -755,9 +813,9 @@ function Daily() {
                     backgroundColor: 'rgba(239, 68, 68, 0.8)',
                     border: 'none',
                     color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    fontSize: '14px',
+                    padding: window.innerWidth <= 480 ? '6px 12px' : '8px 16px',
+                    borderRadius: '16px',
+                    fontSize: window.innerWidth <= 480 ? '12px' : '14px',
                     cursor: 'pointer',
                     marginTop: '8px',
                     transition: 'all 0.3s'
@@ -765,7 +823,7 @@ function Daily() {
                   onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 1)'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.8)'}
                 >
-                  🗑️ 이 사진 삭제 (Delete 키)
+                  🗑️ 이 사진 삭제
                 </button>
               )}
             </div>
@@ -795,7 +853,7 @@ function Daily() {
             style={{
               backgroundColor: 'rgba(17, 24, 39, 0.95)',
               borderRadius: '16px',
-              padding: '32px',
+              padding: window.innerWidth <= 480 ? '24px' : '32px',
               maxWidth: '400px',
               width: '100%',
               backdropFilter: 'blur(10px)',
@@ -804,7 +862,7 @@ function Daily() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 style={{ 
-              fontSize: '24px', 
+              fontSize: window.innerWidth <= 480 ? '20px' : '24px', 
               fontWeight: '600', 
               marginBottom: '24px', 
               textAlign: 'center',
