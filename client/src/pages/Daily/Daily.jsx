@@ -176,6 +176,9 @@ function Daily() {
     setCurrentImageIndex(imageIndex);
     setModalImage(collection.images[imageIndex]);
     setIsFullscreen(true);
+    
+    // URL 업데이트 (전체화면 모드 표시)
+    window.history.pushState({ modal: true }, '', `#gallery-${collection.id}-${imageIndex}`);
   };
 
   // 이미지 모달 닫기
@@ -185,6 +188,11 @@ function Daily() {
     setCurrentImageIndex(0);
     setIsFullscreen(false);
     stopAutoScroll();
+    
+    // URL 정리 (전체화면 모드에서만)
+    if (window.history.state && window.history.state.modal) {
+      window.history.back();
+    }
   };
 
   // 다음 이미지
@@ -257,8 +265,8 @@ function Daily() {
     if (!touchStart || !touchEnd) return;
     
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+    const isLeftSwipe = distance > 30; // 더 민감하게 조정
+    const isRightSwipe = distance < -30;
 
     if (isLeftSwipe && currentImageIndex < currentCollection.images.length - 1) {
       nextImage();
@@ -335,6 +343,18 @@ function Daily() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [modalImage, currentImageIndex, currentCollection, isAdminMode, autoScroll]);
 
+  // 브라우저 뒤로가기 처리
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (modalImage) {
+        closeModal();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [modalImage]);
+
   // 컴포넌트 언마운트 시 자동 스크롤 정리
   useEffect(() => {
     return () => {
@@ -352,8 +372,9 @@ function Daily() {
       paddingTop: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
       padding: window.innerWidth <= 480 ? '120px 12px 20px 12px' : window.innerWidth <= 768 ? '140px 16px 24px 16px' : '20vh 32px 32px 32px',
       overflowX: 'hidden',
-      overflowY: 'auto',
-      WebkitOverflowScrolling: 'touch'
+      overflowY: 'visible',
+      WebkitOverflowScrolling: 'touch',
+      position: 'relative'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* 헤더 섹션 */}
@@ -896,7 +917,10 @@ function Daily() {
                 maxWidth: '100%',
                 maxHeight: '100%',
                 objectFit: 'contain',
-                borderRadius: '8px'
+                borderRadius: '8px',
+                transition: 'transform 0.3s ease-out',
+                transform: 'translateX(0)',
+                touchAction: 'pan-y pinch-zoom'
               }}
             />
 
