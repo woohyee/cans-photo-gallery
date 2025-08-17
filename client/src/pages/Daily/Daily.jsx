@@ -241,6 +241,35 @@ function Daily() {
     }
   };
 
+  // 터치 이벤트 처리 (모바일 드래그 네비게이션)
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentImageIndex < currentCollection.images.length - 1) {
+      nextImage();
+    } else if (isRightSwipe && currentImageIndex > 0) {
+      prevImage();
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   // 관리자 인증
   const handleAdminLogin = () => {
     if (adminPassword === 'canphoto2024') {
@@ -322,7 +351,9 @@ function Daily() {
       color: 'white', 
       paddingTop: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
       padding: window.innerWidth <= 480 ? '120px 12px 20px 12px' : window.innerWidth <= 768 ? '140px 16px 24px 16px' : '20vh 32px 32px 32px',
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      WebkitOverflowScrolling: 'touch'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* 헤더 섹션 */}
@@ -723,7 +754,12 @@ function Daily() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
-          }} onClick={(e) => e.stopPropagation()}>
+          }} 
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          >
             
             {/* 상단 컨트롤 바 */}
             <div style={{
@@ -745,16 +781,26 @@ function Daily() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 {/* 자동 스크롤 버튼 */}
                 <button
-                  onClick={toggleAutoScroll}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleAutoScroll();
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    toggleAutoScroll();
+                  }}
                   style={{
                     backgroundColor: autoScroll ? 'rgba(59, 130, 246, 0.8)' : 'rgba(255,255,255,0.2)',
                     border: 'none',
                     color: 'white',
-                    padding: window.innerWidth <= 480 ? '6px 10px' : '8px 12px',
+                    padding: window.innerWidth <= 480 ? '8px 12px' : '8px 12px',
                     borderRadius: '8px',
-                    fontSize: window.innerWidth <= 480 ? '12px' : '14px',
+                    fontSize: window.innerWidth <= 480 ? '14px' : '14px',
                     cursor: 'pointer',
-                    transition: 'all 0.3s'
+                    transition: 'all 0.3s',
+                    minWidth: window.innerWidth <= 480 ? '60px' : 'auto',
+                    minHeight: window.innerWidth <= 480 ? '40px' : 'auto',
+                    touchAction: 'manipulation'
                   }}
                 >
                   {autoScroll ? '⏸️ 정지' : '▶️ 자동'}
@@ -874,20 +920,31 @@ function Daily() {
                 {currentImageIndex + 1} / {currentCollection.images.length} • {currentCollection.date} • {currentCollection.location}
               </p>
               
-              {/* 키보드 단축키 안내 */}
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                gap: window.innerWidth <= 480 ? '8px' : '16px', 
-                marginTop: '8px',
-                fontSize: window.innerWidth <= 480 ? '10px' : '12px',
-                color: '#6b7280'
-              }}>
-                <span>← → 이동</span>
-                <span>Space 자동재생</span>
-                <span>ESC 닫기</span>
-                {isAdminMode && <span>Delete 삭제</span>}
-              </div>
+                             {/* 키보드/터치 안내 */}
+               <div style={{ 
+                 display: 'flex', 
+                 justifyContent: 'center', 
+                 gap: window.innerWidth <= 480 ? '8px' : '16px', 
+                 marginTop: '8px',
+                 fontSize: window.innerWidth <= 480 ? '10px' : '12px',
+                 color: '#6b7280',
+                 flexWrap: 'wrap'
+               }}>
+                 {window.innerWidth <= 480 ? (
+                   <>
+                     <span>← → 드래그</span>
+                     <span>자동재생 버튼</span>
+                     <span>화면 터치 닫기</span>
+                   </>
+                 ) : (
+                   <>
+                     <span>← → 이동</span>
+                     <span>Space 자동재생</span>
+                     <span>ESC 닫기</span>
+                   </>
+                 )}
+                 {isAdminMode && <span>Delete 삭제</span>}
+               </div>
               
               {isAdminMode && (
                 <button
