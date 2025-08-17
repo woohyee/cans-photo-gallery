@@ -15,7 +15,7 @@ import Admin from './pages/Admin/Admin';                  // 관리자
 
 function App() {
   return (
-    <Router>
+    <Router basename="/">
       <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
         
         {/* 상단 타이틀 영역 (모바일 최적화) */}
@@ -164,7 +164,7 @@ function App() {
 
         {/* 페이지 라우팅 */}
         <Routes>
-          <Route path="/" element={<HeroSlide />} />
+          <Route exact path="/" element={<HeroSlide />} />
           <Route path="/archive" element={<Archive />} />
           <Route path="/daily" element={<Daily />} />
           <Route path="/theme" element={<Theme />} />
