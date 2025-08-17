@@ -252,21 +252,34 @@ function Daily() {
   // 터치 이벤트 처리 (모바일 드래그 네비게이션)
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleTouchStart = (e) => {
+    e.preventDefault();
     setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(false);
   };
 
   const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    e.preventDefault();
+    if (touchStart) {
+      setTouchEnd(e.targetTouches[0].clientX);
+      setIsDragging(true);
+    }
   };
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    if (!touchStart || !touchEnd || !isDragging) {
+      setTouchStart(null);
+      setTouchEnd(null);
+      setIsDragging(false);
+      return;
+    }
     
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 30; // 더 민감하게 조정
-    const isRightSwipe = distance < -30;
+    const isLeftSwipe = distance > 20; // 더 민감하게 조정
+    const isRightSwipe = distance < -20;
 
     if (isLeftSwipe && currentImageIndex < currentCollection.images.length - 1) {
       nextImage();
@@ -276,6 +289,7 @@ function Daily() {
 
     setTouchStart(null);
     setTouchEnd(null);
+    setIsDragging(false);
   };
 
   // 관리자 인증
@@ -372,9 +386,10 @@ function Daily() {
       paddingTop: window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh',
       padding: window.innerWidth <= 480 ? '120px 12px 20px 12px' : window.innerWidth <= 768 ? '140px 16px 24px 16px' : '20vh 32px 32px 32px',
       overflowX: 'hidden',
-      overflowY: 'visible',
+      overflowY: 'auto',
       WebkitOverflowScrolling: 'touch',
-      position: 'relative'
+      position: 'relative',
+      height: '100vh'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* 헤더 섹션 */}
@@ -918,9 +933,11 @@ function Daily() {
                 maxHeight: '100%',
                 objectFit: 'contain',
                 borderRadius: '8px',
-                transition: 'transform 0.3s ease-out',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 transform: 'translateX(0)',
-                touchAction: 'pan-y pinch-zoom'
+                touchAction: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none'
               }}
             />
 

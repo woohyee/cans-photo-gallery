@@ -5,7 +5,7 @@
 // - 모든 UI 텍스트: 한국어
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import HeroSlide from './components/HeroSlide/HeroSlide';  // 전체 슬라이드
 import Archive from './pages/Archive/Archive';            // 주간 아카이브
 import Daily from './pages/Daily/Daily';                  // 일자별
@@ -170,6 +170,7 @@ function App() {
           <Route path="/theme" element={<Theme />} />
           <Route path="/location" element={<Location />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
