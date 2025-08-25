@@ -14,7 +14,7 @@
     - 키보드 이벤트 처리 통합
     - _요구사항: 2.1, 4.1, 4.2_
 
-  - [-] 2.2 GallerySlider Embla 기반 슬라이더 구현
+  - [x] 2.2 GallerySlider Embla 기반 슬라이더 구현
     - Embla Carousel 초기화 및 dragFree 모드 설정
     - containScroll: 'trimSnaps' 옵션 적용
     - 부드러운 드래그 인터랙션 구현

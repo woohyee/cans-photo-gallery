@@ -14,18 +14,23 @@ const ImageViewer = ({
 }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const imageRefs = useRef([]);
+  const thumbnailContainerRef = useRef(null);
+  const thumbnailRefs = useRef([]);
 
-  // Embla Carousel 설정
+  // Embla Carousel 설정 - 손가락 추적 + 다중 스킵 방지
   const options = {
-    dragFree: true,           // 자유로운 드래그
-    containScroll: 'trimSnaps', // 끝에서 스냅 제한
-    skipSnaps: false,         // 스냅 활성화
-    startIndex: currentIndex, // 초기 인덱스
-    align: 'center',          // 중앙 정렬
-    slidesToScroll: 1,        // 한 번에 하나씩
-    loop: false,              // 무한 루프 비활성화
-    duration: 25,             // 빠른 전환
-    dragThreshold: 10,        // 드래그 감도
+    loop: false,
+    dragFree: false,           // 스냅 유지 (여러 장 건너뜀 방지)
+    slidesToScroll: 1,         // 한 번에 1장만
+    containScroll: 'trimSnaps',
+    watchDrag: true,           // 드래그 감지 활성화
+    inViewThreshold: 0.7,      // 70% 이상 들어와야 페이지 전환
+    skipSnaps: false,
+    speed: 10,                 // 부드러운 추적을 위한 낮은 속도
+    startIndex: currentIndex,
+    align: 'center',
+    duration: 25,              // 스냅 전환 속도
+    dragThreshold: 10,         // 민감한 드래그 감지
   };
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
@@ -36,8 +41,10 @@ const ImageViewer = ({
     const selectedIndex = emblaApi.selectedScrollSnap();
     if (selectedIndex !== currentIndex) {
       onIndexChange(selectedIndex);
+      // 썸네일도 함께 중앙으로 스크롤
+      scrollThumbnailToCenter(selectedIndex);
     }
-  }, [emblaApi, currentIndex, onIndexChange]);
+  }, [emblaApi, currentIndex, onIndexChange, scrollThumbnailToCenter]);
 
   // 드래그 상태 추적
   const [isDragging, setIsDragging] = useState(false);
@@ -49,25 +56,42 @@ const ImageViewer = ({
     const onPointerDown = () => setIsDragging(true);
     const onPointerUp = () => setIsDragging(false);
     
+    // 드래그 중 실시간 업데이트를 위한 이벤트
+    const onScroll = () => {
+      // 드래그 중에도 썸네일 동기화 (부드러운 추적)
+      const selectedIndex = emblaApi.selectedScrollSnap();
+      if (selectedIndex !== currentIndex) {
+        scrollThumbnailToCenter(selectedIndex);
+      }
+    };
+    
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
     emblaApi.on('pointerDown', onPointerDown);
     emblaApi.on('pointerUp', onPointerUp);
+    emblaApi.on('scroll', onScroll); // 스크롤 중 실시간 동기화
+    
+    // 초기 로딩시 썸네일을 현재 인덱스로 스크롤
+    setTimeout(() => {
+      scrollThumbnailToCenter(currentIndex);
+    }, 100);
     
     return () => {
       emblaApi.off('select', onSelect);
       emblaApi.off('reInit', onSelect);
       emblaApi.off('pointerDown', onPointerDown);
       emblaApi.off('pointerUp', onPointerUp);
+      emblaApi.off('scroll', onScroll);
     };
-  }, [emblaApi, onSelect]);
+  }, [emblaApi, onSelect, currentIndex, scrollThumbnailToCenter]);
 
-  // 외부에서 currentIndex가 변경될 때 Embla 동기화
+  // 외부에서 currentIndex가 변경될 때 Embla 및 썸네일 동기화
   useEffect(() => {
     if (emblaApi && emblaApi.selectedScrollSnap() !== currentIndex) {
       emblaApi.scrollTo(currentIndex, false); // 즉시 이동 (애니메이션 없음)
+      scrollThumbnailToCenter(currentIndex); // 썸네일도 동기화
     }
-  }, [emblaApi, currentIndex]);
+  }, [emblaApi, currentIndex, scrollThumbnailToCenter]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -93,8 +117,33 @@ const ImageViewer = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [emblaApi, onClose]);
 
+  // 썸네일을 중앙으로 스크롤하는 함수 (부드러운 추적)
+  const scrollThumbnailToCenter = useCallback((index, immediate = false) => {
+    if (!thumbnailContainerRef.current || !thumbnailRefs.current[index]) return;
+    
+    const container = thumbnailContainerRef.current;
+    const thumbnail = thumbnailRefs.current[index];
+    
+    const containerWidth = container.offsetWidth;
+    const thumbnailLeft = thumbnail.offsetLeft;
+    const thumbnailWidth = thumbnail.offsetWidth;
+    
+    // 썸네일을 컨테이너 중앙에 위치시키기 위한 스크롤 위치 계산
+    const scrollLeft = thumbnailLeft - (containerWidth / 2) + (thumbnailWidth / 2);
+    
+    if (immediate) {
+      container.scrollLeft = scrollLeft;
+    } else {
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  }, []);
+
   // 썸네일 클릭 핸들러 (Embla와 연동)
-  const handleThumbnailClick = useCallback((index) => {
+  const handleThumbnailClick = useCallback((index, event) => {
+    event.stopPropagation(); // 이벤트 전파 방지
     if (emblaApi) {
       emblaApi.scrollTo(index);
     }
@@ -157,6 +206,8 @@ const ImageViewer = ({
     alignItems: 'center',
     touchAction: 'pan-y',
     cursor: isDragging ? 'grabbing' : 'grab',
+    overscrollBehaviorX: 'contain', // iOS/안드로이드 수평 오버스크롤 차단
+    WebkitOverflowScrolling: 'touch', // iOS 부드러운 스크롤
   };
 
   const emblaSlideStyle = {
@@ -262,14 +313,19 @@ const ImageViewer = ({
       </div>
 
       {/* 썸네일 네비게이션 */}
-      <div style={thumbnailContainerStyle}>
+      <div 
+        ref={thumbnailContainerRef}
+        style={thumbnailContainerStyle}
+        onClick={(e) => e.stopPropagation()} // 컨테이너 클릭 이벤트 전파 방지
+      >
         {images.map((image, index) => (
           <img
             key={index}
+            ref={el => thumbnailRefs.current[index] = el}
             src={`/images/images/archive/${folder}/${image}`}
             alt={`Thumbnail ${index + 1}`}
             style={thumbnailStyle(index)}
-            onClick={() => handleThumbnailClick(index)}
+            onClick={(e) => handleThumbnailClick(index, e)}
             onMouseEnter={(e) => {
               if (index !== currentIndex) {
                 e.target.style.opacity = '0.9';
