@@ -1,5 +1,7 @@
 // 📄 src/pages/Daily/Daily.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import ImageViewer from '../../components/ImageViewer/ImageViewer';
+import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 
 function Daily() {
   const [selectedDate, setSelectedDate] = useState('all');
@@ -679,22 +681,16 @@ function Daily() {
                           }
                         }}
                         >
-                          <img
+                          <OptimizedImage
                             src={`/images/images/archive/${collection.folder}/${image}`}
                             alt={`${collection.title} - ${originalIndex + 1}`}
                             style={{ 
                               width: '100%', 
-                              height: '100%', 
-                              objectFit: 'cover',
+                              height: '100%',
                               transition: 'transform 0.3s'
                             }}
-                            onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-                            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                             onClick={() => openModal(collection, originalIndex)}
-                            onError={() => {
-                              const imageKey = `${collection.folder}/${image}`;
-                              setImageErrors(prev => new Set([...prev, imageKey]));
-                            }}
+                            loading="lazy"
                           />
                           
                           {/* 확대 아이콘 */}
@@ -1171,6 +1167,21 @@ function Daily() {
             </p>
           </div>
         </div>
+      )}
+
+      {/* 새로운 이미지 뷰어 */}
+      {modalImage && currentCollection && (
+        <ImageViewer
+          images={currentCollection.images}
+          currentIndex={currentImageIndex}
+          onClose={closeModal}
+          onIndexChange={(newIndex) => {
+            setCurrentImageIndex(newIndex);
+            setModalImage(currentCollection.images[newIndex]);
+          }}
+          title={currentCollection.title}
+          isDarkMode={true}
+        />
       )}
     </div>
   );

@@ -83,12 +83,12 @@ const Navbar = () => {
   };
 
   const titleStyle = {
-    fontSize: windowWidth < 768 ? '18px' : '32px',
+    fontSize: windowWidth < 480 ? '14px' : windowWidth < 768 ? '18px' : '32px',
     fontWeight: 'bold',
     color: isDarkMode ? 'white' : '#1f2937',
     margin: 0,
     whiteSpace: 'nowrap',
-    display: windowWidth < 480 ? 'none' : 'block',
+    display: 'block',
   };
 
   const hamburgerButtonStyle = {
