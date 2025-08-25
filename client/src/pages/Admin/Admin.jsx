@@ -10,8 +10,8 @@ function Admin() {
       minHeight: '100vh', 
       backgroundColor: 'black', 
       color: 'white', 
-      paddingTop: window.innerWidth <= 480 ? '140px' : window.innerWidth <= 768 ? '160px' : '20vh',
-      padding: window.innerWidth <= 480 ? '140px 16px 32px 16px' : window.innerWidth <= 768 ? '160px 16px 32px 16px' : '20vh 32px 32px 32px'
+      paddingTop: '20px',
+      padding: window.innerWidth <= 480 ? '20px 16px 32px 16px' : window.innerWidth <= 768 ? '20px 16px 32px 16px' : '20px 32px 32px 32px'
     }}>
       <div style={{ textAlign: 'center', maxWidth: '400px', margin: '0 auto 32px auto' }}>
         <div style={{ fontSize: '80px', marginBottom: '24px' }}>⚙️</div>

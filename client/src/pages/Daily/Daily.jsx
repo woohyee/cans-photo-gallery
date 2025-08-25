@@ -12,9 +12,7 @@ function Daily() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [autoScroll, setAutoScroll] = useState(false);
-  const [autoScrollInterval, setAutoScrollInterval] = useState(null);
-  const [autoScrollSpeed, setAutoScrollSpeed] = useState(3000); // 3초마다
+
   const scrollRef = useRef(null);
 
   // 반응형 처리를 위한 window width state
@@ -32,14 +30,13 @@ function Daily() {
   // 실제 아카이브 폴더 기반 데이터
   const archiveDates = [
     {
-      folder: '7월27일',
-      date: '2024.07.27',
+      folder: '250727',
+      date: '2025.07.27',
       title: '7월 마지막 주말 나들이',
       location: '서울 근교',
       description: '날씨가 너무 좋아서 오랜만에 카메라를 들고 나갔습니다. 평범한 일상이지만 소중한 순간들을 담아봤어요.',
       images: [
         'TalkMedia_i_2b386d713df5.jpg.jpg',
-        'TalkMedia_i_3c5df1fd52bf.jpg.jpg',
         'TalkMedia_i_5820363d6561.jpg.jpg',
         'TalkMedia_i_6cc33457f38f.jpg.jpg',
         'TalkMedia_i_6d026ee1f099.jpg.jpg',
@@ -47,14 +44,15 @@ function Daily() {
         'TalkMedia_i_8d2b3c1bfe73.jpg.jpg',
         'TalkMedia_i_9255ab60777a.jpg.jpg',
         'TalkMedia_i_956e1ec9dfd8.jpg.jpg',
-        'TalkMedia_i_a9eaf0936d2f.jpg.jpg'
+        'TalkMedia_i_a9eaf0936d2f.jpg.jpg',
+        'TalkMedia_i_b7d07e5f3220.jpg.jpg'
       ],
       tags: ['일상', '주말', '나들이', '여름'],
       likes: 15
     },
     {
-      folder: '7월13일',
-      date: '2024.07.13',
+      folder: '250713',
+      date: '2025.07.13',
       title: '여름 중반의 특별한 하루',
       location: '한강공원',
       description: '더위를 피해 한강으로 나왔습니다. 시원한 바람과 함께 여유로운 시간을 보냈어요.',
@@ -72,8 +70,8 @@ function Daily() {
       likes: 22
     },
     {
-      folder: '7월6일',
-      date: '2024.07.06',
+      folder: '250706',
+      date: '2025.07.06',
       title: '7월 첫 주말의 기록',
       location: '동네 근처',
       description: '7월이 시작되는 첫 주말, 동네를 산책하며 소소한 일상을 담았습니다.',
@@ -91,8 +89,8 @@ function Daily() {
       likes: 18
     },
     {
-      folder: '6월29일',
-      date: '2024.06.29',
+      folder: '250629',
+      date: '2025.06.29',
       title: '6월의 마지막 기록',
       location: '공원과 카페',
       description: '6월이 끝나가는 아쉬움을 담아 여러 곳을 돌아다니며 사진을 찍었습니다.',
@@ -112,8 +110,8 @@ function Daily() {
       likes: 12
     },
     {
-      folder: '6월23일',
-      date: '2024.06.23',
+      folder: '250623',
+      date: '2025.06.23',
       title: '6월 중순의 여유로운 하루',
       location: '시내 곳곳',
       description: '날씨가 좋아서 시내 여러 곳을 돌아다니며 다양한 풍경을 담았습니다.',
@@ -133,8 +131,8 @@ function Daily() {
       likes: 20
     },
     {
-      folder: '6월15일',
-      date: '2024.06.15',
+      folder: '250615',
+      date: '2025.06.15',
       title: '6월 중순의 소중한 순간들',
       location: '다양한 장소',
       description: '6월 중순, 여러 장소에서 만난 아름다운 순간들을 기록했습니다.',
@@ -148,7 +146,12 @@ function Daily() {
         'TalkMedia_i_7f8c68e99dc7.jpg.jpg',
         'TalkMedia_i_8f0e30f48ef8.jpg.jpg',
         'TalkMedia_i_a701901d68ca.jpg.jpg',
-        'TalkMedia_i_b035c79bc3b8.jpg.jpg'
+        'TalkMedia_i_b035c79bc3b8.jpg.jpg',
+        'TalkMedia_i_b4858797e049.jpg.jpg',
+        'TalkMedia_i_bd6a55b1ff35.jpg.jpg',
+        'TalkMedia_i_ce4bb7d3df2f.jpg.jpg',
+        'TalkMedia_i_d7ebead2d32e.jpg.jpg',
+        'TalkMedia_i_e25ea27663ac.jpg.jpg'
       ],
       tags: ['6월', '중순', '다양한', '순간'],
       likes: 16
@@ -156,25 +159,9 @@ function Daily() {
   ];
 
   useEffect(() => {
-    // 이미지 존재 여부를 확인하고 필터링
-    const validateCollections = async () => {
-      const validatedCollections = await Promise.all(
-        archiveDates.map(async (collection) => {
-          const validImages = [];
-          for (const image of collection.images) {
-            const imageKey = `${collection.folder}/${image}`;
-            if (!imageErrors.has(imageKey)) {
-              validImages.push(image);
-            }
-          }
-          return { ...collection, images: validImages };
-        })
-      );
-      setDailyCollections(validatedCollections.filter(col => col.images.length > 0));
-    };
-
-    validateCollections();
-  }, [imageErrors]);
+    // 이미지 검증 없이 바로 컬렉션 설정
+    setDailyCollections(archiveDates);
+  }, []);
 
   const dates = archiveDates.map(item => item.date).sort((a, b) => new Date(b) - new Date(a));
   
@@ -186,6 +173,7 @@ function Daily() {
   console.log('현재 selectedDate:', selectedDate);
   console.log('전체 컬렉션:', dailyCollections.length);
   console.log('필터된 컬렉션:', filteredCollections.length);
+  console.log('이미지 에러들:', Array.from(imageErrors));
 
   // 이미지 모달 열기
   const openModal = (collection, imageIndex) => {
@@ -204,7 +192,6 @@ function Daily() {
     setCurrentCollection(null);
     setCurrentImageIndex(0);
     setIsFullscreen(false);
-    stopAutoScroll();
     
     // URL 정리 (전체화면 모드에서만)
     if (window.history.state && window.history.state.modal) {
@@ -230,46 +217,15 @@ function Daily() {
     }
   };
 
-  // 자동 스크롤 시작
-  const startAutoScroll = () => {
-    if (autoScrollInterval) return;
-    
-    const interval = setInterval(() => {
-      if (currentCollection && currentImageIndex < currentCollection.images.length - 1) {
-        nextImage();
-      } else if (currentCollection && currentImageIndex >= currentCollection.images.length - 1) {
-        // 마지막 이미지에 도달하면 처음으로
-        setCurrentImageIndex(0);
-        setModalImage(currentCollection.images[0]);
-      }
-    }, autoScrollSpeed);
-    
-    setAutoScrollInterval(interval);
-    setAutoScroll(true);
-  };
 
-  // 자동 스크롤 중지
-  const stopAutoScroll = () => {
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-      setAutoScrollInterval(null);
-    }
-    setAutoScroll(false);
-  };
 
-  // 자동 스크롤 토글
-  const toggleAutoScroll = () => {
-    if (autoScroll) {
-      stopAutoScroll();
-    } else {
-      startAutoScroll();
-    }
-  };
-
-  // 터치 이벤트 처리 (모바일 드래그 네비게이션)
+  // 터치 및 마우스 드래그 이벤트 처리
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [mouseStart, setMouseStart] = useState(null);
+  const [mouseEnd, setMouseEnd] = useState(null);
+  const [isMouseDragging, setIsMouseDragging] = useState(false);
 
   const handleTouchStart = (e) => {
     e.preventDefault();
@@ -295,7 +251,7 @@ function Daily() {
     }
     
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 20; // 더 민감하게 조정
+    const isLeftSwipe = distance > 20;
     const isRightSwipe = distance < -20;
 
     if (isLeftSwipe && currentImageIndex < currentCollection.images.length - 1) {
@@ -309,9 +265,48 @@ function Daily() {
     setIsDragging(false);
   };
 
+  // 마우스 드래그 이벤트 (PC용)
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setMouseStart(e.clientX);
+    setIsMouseDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    e.preventDefault();
+    if (mouseStart) {
+      setMouseEnd(e.clientX);
+      setIsMouseDragging(true);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    e.preventDefault();
+    if (!mouseStart || !mouseEnd || !isMouseDragging) {
+      setMouseStart(null);
+      setMouseEnd(null);
+      setIsMouseDragging(false);
+      return;
+    }
+    
+    const distance = mouseStart - mouseEnd;
+    const isLeftDrag = distance > 50; // PC는 더 큰 거리 필요
+    const isRightDrag = distance < -50;
+
+    if (isLeftDrag && currentImageIndex < currentCollection.images.length - 1) {
+      nextImage();
+    } else if (isRightDrag && currentImageIndex > 0) {
+      prevImage();
+    }
+
+    setMouseStart(null);
+    setMouseEnd(null);
+    setIsMouseDragging(false);
+  };
+
   // 관리자 인증
   const handleAdminLogin = () => {
-    if (adminPassword === 'canphoto2024') {
+    if (adminPassword === '1234') {
       setIsAdminMode(true);
       setShowAdminLogin(false);
       setAdminPassword('');
@@ -352,10 +347,7 @@ function Daily() {
         if (e.key === 'ArrowRight') nextImage();
         if (e.key === 'ArrowLeft') prevImage();
         if (e.key === 'Escape') closeModal();
-        if (e.key === ' ' || e.key === 'Space') {
-          e.preventDefault();
-          toggleAutoScroll();
-        }
+
         if (e.key === 'Delete' && isAdminMode) {
           handleDeleteImage(currentCollection, currentImageIndex);
         }
@@ -372,7 +364,7 @@ function Daily() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [modalImage, currentImageIndex, currentCollection, isAdminMode, autoScroll]);
+  }, [modalImage, currentImageIndex, currentCollection, isAdminMode]);
 
   // 브라우저 뒤로가기 처리
   useEffect(() => {
@@ -386,22 +378,15 @@ function Daily() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [modalImage]);
 
-  // 컴포넌트 언마운트 시 자동 스크롤 정리
-  useEffect(() => {
-    return () => {
-      if (autoScrollInterval) {
-        clearInterval(autoScrollInterval);
-      }
-    };
-  }, [autoScrollInterval]);
+
 
   return (
     <div style={{ 
       minHeight: '100vh', 
       backgroundColor: 'black', 
       color: 'white', 
-      paddingTop: windowWidth <= 480 ? '120px' : windowWidth <= 768 ? '140px' : '20vh',
-      padding: windowWidth <= 480 ? '120px 12px 20px 12px' : windowWidth <= 768 ? '140px 16px 24px 16px' : '20vh 32px 32px 32px',
+      paddingTop: '10px',
+      padding: windowWidth <= 480 ? '10px 12px 20px 12px' : windowWidth <= 768 ? '10px 16px 24px 16px' : '10px 32px 32px 32px',
       overflowX: 'hidden',
       overflowY: 'auto',
       WebkitOverflowScrolling: 'touch',
@@ -469,8 +454,10 @@ function Daily() {
         {/* 날짜 필터 (가로 스크롤) */}
         <div style={{ 
           marginBottom: windowWidth <= 480 ? '20px' : '32px', 
-          overflow: 'hidden',
-          paddingBottom: '8px'
+          overflow: 'visible',
+          paddingBottom: '8px',
+          zIndex: 10,
+          position: 'relative'
         }}>
           <div style={{ 
             display: 'flex', 
@@ -480,10 +467,14 @@ function Daily() {
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(255,255,255,0.3) transparent',
             WebkitOverflowScrolling: 'touch',
-            msOverflowStyle: 'none'
+            msOverflowStyle: 'none',
+            zIndex: 10,
+            position: 'relative'
           }}>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 console.log('전체 버튼 클릭됨');
                 setSelectedDate('all');
               }}
@@ -507,9 +498,19 @@ function Daily() {
             {dates.map((date) => (
               <button
                 key={date}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   console.log('날짜 버튼 클릭됨:', date);
                   setSelectedDate(date);
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  console.log('날짜 버튼 마우스다운:', date);
+                }}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  console.log('날짜 버튼 터치시작:', date);
                 }}
                 style={{
                   padding: windowWidth <= 480 ? '8px 10px' : '12px 16px',
@@ -523,7 +524,10 @@ function Daily() {
                   whiteSpace: 'nowrap',
                   minWidth: windowWidth <= 480 ? '100px' : '120px',
                   fontWeight: selectedDate === date ? '600' : '400',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  zIndex: 20,
+                  position: 'relative',
+                  pointerEvents: 'auto'
                 }}
               >
                 📅 {date}
@@ -544,6 +548,15 @@ function Daily() {
           <div>선택된 날짜: {selectedDate}</div>
           <div>전체 컬렉션: {dailyCollections.length}개</div>
           <div>필터된 컬렉션: {filteredCollections.length}개</div>
+          <div>필터된 컬렉션 날짜들: {filteredCollections.map(c => c.date).join(', ')}</div>
+          <div>이미지 에러 개수: {imageErrors.size}</div>
+          <div>첫 번째 컬렉션 이미지 개수: {dailyCollections[0]?.images?.length || 0}</div>
+          {filteredCollections.length > 0 && (
+            <div>
+              <div>첫 번째 필터된 컬렉션: {filteredCollections[0].title}</div>
+              <div>첫 번째 이미지 경로: /images/images/archive/{filteredCollections[0].folder}/{filteredCollections[0].images[0]}</div>
+            </div>
+          )}
         </div>
 
         {/* 타임라인 스타일 결과 */}
@@ -625,7 +638,7 @@ function Daily() {
                     fontSize: windowWidth <= 480 ? '12px' : '14px', 
                     color: '#9ca3af' 
                   }}>
-                    📸 총 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장
+                    📸 총 {collection.images.length}장
                   </span>
                   <span style={{ 
                     fontSize: windowWidth <= 480 ? '11px' : '12px', 
@@ -641,7 +654,6 @@ function Daily() {
                   gap: windowWidth <= 480 ? '8px' : windowWidth <= 768 ? '10px' : '12px' 
                 }}>
                   {collection.images
-                    .filter(img => !imageErrors.has(`${collection.folder}/${img}`))
                     .map((image, index) => {
                       const originalIndex = collection.images.indexOf(image);
                       
@@ -780,7 +792,7 @@ function Daily() {
                   color: '#9ca3af' 
                 }}>
                   <span>❤️ {collection.likes}</span>
-                  <span>📸 {collection.images.filter(img => !imageErrors.has(`${collection.folder}/${img}`)).length}장</span>
+                  <span>📸 {collection.images.length}장</span>
                 </div>
               </div>
             </div>
@@ -804,12 +816,12 @@ function Daily() {
         <div 
           style={{
             position: 'fixed',
-            top: 0,
+            top: '80px',
             left: 0,
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.98)',
-            zIndex: 2000,
+            zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -852,32 +864,6 @@ function Daily() {
               </div>
               
               <div style={{ display: 'flex', gap: '8px' }}>
-                {/* 자동 스크롤 버튼 */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleAutoScroll();
-                  }}
-                  onTouchEnd={(e) => {
-                    e.stopPropagation();
-                    toggleAutoScroll();
-                  }}
-                  style={{
-                    backgroundColor: autoScroll ? 'rgba(59, 130, 246, 0.8)' : 'rgba(255,255,255,0.2)',
-                    border: 'none',
-                    color: 'white',
-                    padding: window.innerWidth <= 480 ? '8px 12px' : '8px 12px',
-                    borderRadius: '8px',
-                    fontSize: window.innerWidth <= 480 ? '14px' : '14px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                    minWidth: window.innerWidth <= 480 ? '60px' : 'auto',
-                    minHeight: window.innerWidth <= 480 ? '40px' : 'auto',
-                    touchAction: 'manipulation'
-                  }}
-                >
-                  {autoScroll ? '⏸️ 정지' : '▶️ 자동'}
-                </button>
                 
                 {/* 닫기 버튼 */}
                 <button
@@ -1011,13 +997,11 @@ function Daily() {
                  {window.innerWidth <= 480 ? (
                    <>
                      <span>← → 드래그</span>
-                     <span>자동재생 버튼</span>
                      <span>화면 터치 닫기</span>
                    </>
                  ) : (
                    <>
                      <span>← → 이동</span>
-                     <span>Space 자동재생</span>
                      <span>ESC 닫기</span>
                    </>
                  )}
@@ -1085,7 +1069,7 @@ function Daily() {
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 3000,
+            zIndex: 1500,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

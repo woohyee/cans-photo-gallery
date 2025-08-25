@@ -10,8 +10,8 @@ function Archive() {
     minHeight: '100vh',
     backgroundColor: 'black',
     color: 'white',
-    paddingTop: w <= 480 ? '140px' : w <= 768 ? '160px' : '20vh',
-    padding: w <= 480 ? '140px 16px 32px 16px' : w <= 768 ? '160px 16px 32px 16px' : '20vh 32px 32px 32px',
+    paddingTop: '20px',
+    padding: w <= 480 ? '20px 16px 32px 16px' : w <= 768 ? '20px 16px 32px 16px' : '20px 32px 32px 32px',
     display: 'flex',
     flexDirection: 'column',
     gap: '32px',
@@ -109,8 +109,8 @@ function Archive() {
               </div>
             </div>
           </div>
-         ))}
-        </div>
+        ))}
+      </div>
       {/* 최상위 컨테이너 닫힘 */}
     </div>
   );
