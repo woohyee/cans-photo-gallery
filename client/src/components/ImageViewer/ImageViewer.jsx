@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
-import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import '../../styles/gallery.css';
 
 const ImageViewer = ({ 
@@ -9,7 +8,6 @@ const ImageViewer = ({
   onClose, 
   onIndexChange,
   title = '',
-  isDarkMode = false,
   folder = '' // 폴더 경로 추가
 }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -34,6 +32,30 @@ const ImageViewer = ({
   };
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
+
+  // 썸네일을 중앙으로 스크롤하는 함수 (부드러운 추적)
+  const scrollThumbnailToCenter = useCallback((index, immediate = false) => {
+    if (!thumbnailContainerRef.current || !thumbnailRefs.current[index]) return;
+    
+    const container = thumbnailContainerRef.current;
+    const thumbnail = thumbnailRefs.current[index];
+    
+    const containerWidth = container.offsetWidth;
+    const thumbnailLeft = thumbnail.offsetLeft;
+    const thumbnailWidth = thumbnail.offsetWidth;
+    
+    // 썸네일을 컨테이너 중앙에 위치시키기 위한 스크롤 위치 계산
+    const scrollLeft = thumbnailLeft - (containerWidth / 2) + (thumbnailWidth / 2);
+    
+    if (immediate) {
+      container.scrollLeft = scrollLeft;
+    } else {
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  }, []);
 
   // Embla 슬라이드 변경 이벤트
   const onSelect = useCallback(() => {
@@ -117,30 +139,6 @@ const ImageViewer = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [emblaApi, onClose]);
 
-  // 썸네일을 중앙으로 스크롤하는 함수 (부드러운 추적)
-  const scrollThumbnailToCenter = useCallback((index, immediate = false) => {
-    if (!thumbnailContainerRef.current || !thumbnailRefs.current[index]) return;
-    
-    const container = thumbnailContainerRef.current;
-    const thumbnail = thumbnailRefs.current[index];
-    
-    const containerWidth = container.offsetWidth;
-    const thumbnailLeft = thumbnail.offsetLeft;
-    const thumbnailWidth = thumbnail.offsetWidth;
-    
-    // 썸네일을 컨테이너 중앙에 위치시키기 위한 스크롤 위치 계산
-    const scrollLeft = thumbnailLeft - (containerWidth / 2) + (thumbnailWidth / 2);
-    
-    if (immediate) {
-      container.scrollLeft = scrollLeft;
-    } else {
-      container.scrollTo({
-        left: scrollLeft,
-        behavior: 'smooth'
-      });
-    }
-  }, []);
-
   // 썸네일 클릭 핸들러 (Embla와 연동)
   const handleThumbnailClick = useCallback((index, event) => {
     event.stopPropagation(); // 이벤트 전파 방지
@@ -169,12 +167,12 @@ const ImageViewer = ({
 
   const containerStyle = {
     position: 'fixed',
-    top: '80px',
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.98)',
-    zIndex: 1000,
+    zIndex: 9999,
     display: 'flex',
     flexDirection: 'column',
     userSelect: 'none',
@@ -182,12 +180,12 @@ const ImageViewer = ({
 
   const headerStyle = {
     position: 'absolute',
-    top: 0,
+    top: '80px',
     left: 0,
     right: 0,
     padding: windowWidth <= 480 ? '12px' : '20px',
     background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%)',
-    zIndex: 1002,
+    zIndex: 10001,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -196,6 +194,7 @@ const ImageViewer = ({
   const emblaContainerStyle = {
     flex: 1,
     overflow: 'hidden',
+    marginTop: '120px', // 네비게이션 바와 헤더 공간 확보
     position: 'relative',
   };
 
