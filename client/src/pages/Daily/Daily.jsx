@@ -1181,6 +1181,7 @@ function Daily() {
           }}
           title={currentCollection.title}
           isDarkMode={true}
+          folder={currentCollection.folder}
         />
       )}
     </div>

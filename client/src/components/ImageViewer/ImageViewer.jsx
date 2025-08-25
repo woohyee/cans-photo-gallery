@@ -7,7 +7,8 @@ const ImageViewer = ({
   onClose, 
   onIndexChange,
   title = '',
-  isDarkMode = false 
+  isDarkMode = false,
+  folder = '' // 폴더 경로 추가
 }) => {
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -135,7 +136,7 @@ const ImageViewer = ({
       for (let i = startIdx; i <= endIdx; i++) {
         if (i !== currentIndex) {
           const img = new Image();
-          img.src = `/images/images/archive/${images[i]}`;
+          img.src = `/images/images/archive/${folder}/${images[i]}`;
         }
       }
     };
@@ -264,7 +265,7 @@ const ImageViewer = ({
       >
         <img
           ref={el => imageRefs.current[currentIndex] = el}
-          src={`/images/images/archive/${images[currentIndex]}`}
+          src={`/images/images/archive/${folder}/${images[currentIndex]}`}
           alt={`Image ${currentIndex + 1}`}
           style={imageStyle}
           loading="eager"
@@ -276,7 +277,7 @@ const ImageViewer = ({
         {images.map((image, index) => (
           <img
             key={index}
-            src={`/images/images/archive/${image}`}
+            src={`/images/images/archive/${folder}/${image}`}
             alt={`Thumbnail ${index + 1}`}
             style={thumbnailStyle(index)}
             onClick={() => handleThumbnailClick(index)}
