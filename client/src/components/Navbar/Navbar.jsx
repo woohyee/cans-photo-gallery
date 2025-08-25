@@ -98,7 +98,7 @@ const Navbar = () => {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '12px',
-    backgroundColor: 'transparent', // 네비게이션 바와 동일하게 투명
+    backgroundColor: isDarkMode ? 'rgba(62, 39, 35, 0.8)' : 'rgba(139, 69, 19, 0.12)', // 네비게이션 바와 동일한 초콜릿 색상
     border: 'none',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
@@ -131,11 +131,11 @@ const Navbar = () => {
 
   const mobileMenuContainerStyle = {
     padding: '12px',
-    backgroundColor: isDarkMode ? 'rgba(62, 39, 35, 0.95)' : 'rgba(139, 69, 19, 0.15)',
+    backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)', // 반투명 배경으로 변경
     backdropFilter: 'blur(12px)',
     borderRadius: '8px',
     boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)',
-    border: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(139, 69, 19, 0.3)'}`,
+    border: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
   };
 
   const mobileLinkStyle = {
@@ -176,8 +176,8 @@ const Navbar = () => {
           <button
             onClick={toggleMenu}
             style={hamburgerButtonStyle}
-            onMouseEnter={(e) => e.target.style.backgroundColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            onMouseEnter={(e) => e.target.style.backgroundColor = isDarkMode ? 'rgba(62, 39, 35, 0.9)' : 'rgba(139, 69, 19, 0.2)'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = isDarkMode ? 'rgba(62, 39, 35, 0.8)' : 'rgba(139, 69, 19, 0.12)'}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: windowWidth < 768 ? '4px' : '6px' }}>
               <span style={hamburgerLineStyle(0)} />
