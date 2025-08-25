@@ -15,20 +15,23 @@ const ImageViewer = ({
   const thumbnailContainerRef = useRef(null);
   const thumbnailRefs = useRef([]);
 
-  // Embla Carousel 설정 - 손가락 추적 + 다중 스킵 방지
+  // Embla Carousel 설정 - CSS Scroll Snap 스타일의 부드러운 전환
   const options = {
     loop: false,
-    dragFree: false,           // 스냅 유지 (여러 장 건너뜀 방지)
+    dragFree: false,           // 스냅 유지 (scroll-snap-stop: always 효과)
     slidesToScroll: 1,         // 한 번에 1장만
     containScroll: 'trimSnaps',
     watchDrag: true,           // 드래그 감지 활성화
-    inViewThreshold: 0.7,      // 70% 이상 들어와야 페이지 전환
-    skipSnaps: false,
-    speed: 10,                 // 부드러운 추적을 위한 낮은 속도
+    inViewThreshold: 0.6,      // 60% 이상 들어와야 페이지 전환
+    skipSnaps: false,          // 빠르게 넘겨도 한 장씩 스냅
+    speed: 6,                  // 매우 부드러운 추적
     startIndex: currentIndex,
-    align: 'center',
-    duration: 25,              // 스냅 전환 속도
-    dragThreshold: 10,         // 민감한 드래그 감지
+    align: 'center',           // scroll-snap-align: center 효과
+    duration: 30,              // scroll-behavior: smooth 효과
+    dragThreshold: 8,          // 적당한 드래그 감지
+    // CSS Scroll Snap 스타일의 부드러운 물리 효과
+    friction: 0.2,             // 낮은 마찰력으로 부드러운 감속
+    resistance: 0.15,          // 경계에서 부드러운 저항
   };
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
@@ -70,21 +73,34 @@ const ImageViewer = ({
 
   // 드래그 상태 추적
   const [isDragging, setIsDragging] = useState(false);
+  const [isSettling, setIsSettling] = useState(false);
 
   // Embla API 초기화 및 이벤트 등록
   useEffect(() => {
     if (!emblaApi) return;
     
-    const onPointerDown = () => setIsDragging(true);
-    const onPointerUp = () => setIsDragging(false);
+    const onPointerDown = () => {
+      setIsDragging(true);
+      setIsSettling(false);
+    };
     
-    // 드래그 중 실시간 업데이트를 위한 이벤트
+    const onPointerUp = () => {
+      setIsDragging(false);
+      setIsSettling(true);
+      // 부드러운 정착을 위한 딜레이
+      setTimeout(() => setIsSettling(false), 400);
+    };
+    
+    // 드래그 중 실시간 업데이트를 위한 이벤트 (throttled)
+    let scrollTimeout;
     const onScroll = () => {
-      // 드래그 중에도 썸네일 동기화 (부드러운 추적)
-      const selectedIndex = emblaApi.selectedScrollSnap();
-      if (selectedIndex !== currentIndex) {
-        scrollThumbnailToCenter(selectedIndex);
-      }
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const selectedIndex = emblaApi.selectedScrollSnap();
+        if (selectedIndex !== currentIndex) {
+          scrollThumbnailToCenter(selectedIndex, isDragging);
+        }
+      }, 16); // 60fps로 제한
     };
     
     emblaApi.on('select', onSelect);
@@ -167,35 +183,37 @@ const ImageViewer = ({
 
   const containerStyle = {
     position: 'fixed',
-    top: 0,
+    top: '80px', // 네비게이션 바 아래에 위치
     left: 0,
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.98)',
-    zIndex: 9999,
+    zIndex: 1000, // 네비게이션 바보다 낮게
     display: 'flex',
     flexDirection: 'column',
     userSelect: 'none',
   };
 
   const headerStyle = {
-    position: 'absolute',
-    top: '80px',
+    position: 'relative',
+    top: 0,
     left: 0,
     right: 0,
     padding: windowWidth <= 480 ? '12px' : '20px',
     background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%)',
-    zIndex: 10001,
+    zIndex: 1001,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: '60px', // 고정 높이
+    flexShrink: 0, // 축소되지 않도록
   };
 
   const emblaContainerStyle = {
     flex: 1,
     overflow: 'hidden',
-    marginTop: '120px', // 네비게이션 바와 헤더 공간 확보
     position: 'relative',
+    marginBottom: '120px', // 썸네일 공간 확보
   };
 
   const emblaViewportStyle = {
@@ -203,19 +221,24 @@ const ImageViewer = ({
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    touchAction: 'pan-y',
+    touchAction: 'pan-x',      // 수평 제스처 의도 명시 (CSS Scroll Snap 스타일)
     cursor: isDragging ? 'grabbing' : 'grab',
     overscrollBehaviorX: 'contain', // iOS/안드로이드 수평 오버스크롤 차단
-    WebkitOverflowScrolling: 'touch', // iOS 부드러운 스크롤
+    WebkitOverflowScrolling: 'touch', // iOS 관성 스크롤
+    // CSS scroll-behavior: smooth 효과를 모방한 부드러운 전환
+    transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)',
   };
 
   const emblaSlideStyle = {
-    flex: '0 0 100%',
+    flex: '0 0 100%',          // CSS Scroll Snap의 flex 설정과 동일
     minWidth: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: windowWidth <= 480 ? '10px' : '20px',
+    // CSS scroll-snap-align: center 효과를 모방
+    scrollSnapAlign: 'center',
+    scrollSnapStop: 'always',   // 빠르게 넘겨도 한 장에 스냅
   };
 
   const imageStyle = {
@@ -223,23 +246,32 @@ const ImageViewer = ({
     maxHeight: '100%',
     objectFit: 'contain',
     borderRadius: '12px',
+    // CSS Scroll Snap 스타일의 사용자 상호작용 방지
+    userSelect: 'none',
+    WebkitUserDrag: 'none',
+    // 하드웨어 가속 및 부드러운 렌더링
     willChange: 'transform',
     transform: 'translateZ(0)',
+    backfaceVisibility: 'hidden',
   };
 
   const thumbnailContainerStyle = {
-    position: 'absolute',
+    position: 'fixed',
     bottom: 0,
     left: 0,
     right: 0,
+    height: '100px',
     padding: '20px',
-    background: 'linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%)',
+    background: 'rgba(0,0,0,0.9)',
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
     gap: '8px',
     overflowX: 'auto',
     scrollbarWidth: 'none',
     msOverflowStyle: 'none',
+    zIndex: 1002,
+    borderTop: '1px solid rgba(255,255,255,0.1)',
   };
 
   const thumbnailStyle = (index) => ({
