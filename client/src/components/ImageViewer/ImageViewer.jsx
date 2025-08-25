@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
+import '../../styles/gallery.css';
 
 const ImageViewer = ({ 
   images, 
@@ -10,12 +12,62 @@ const ImageViewer = ({
   isDarkMode = false,
   folder = '' // 폴더 경로 추가
 }) => {
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const containerRef = useRef(null);
   const imageRefs = useRef([]);
+
+  // Embla Carousel 설정
+  const options = {
+    dragFree: true,           // 자유로운 드래그
+    containScroll: 'trimSnaps', // 끝에서 스냅 제한
+    skipSnaps: false,         // 스냅 활성화
+    startIndex: currentIndex, // 초기 인덱스
+    align: 'center',          // 중앙 정렬
+    slidesToScroll: 1,        // 한 번에 하나씩
+    loop: false,              // 무한 루프 비활성화
+    duration: 25,             // 빠른 전환
+    dragThreshold: 10,        // 드래그 감도
+  };
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(options);
+
+  // Embla 슬라이드 변경 이벤트
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    const selectedIndex = emblaApi.selectedScrollSnap();
+    if (selectedIndex !== currentIndex) {
+      onIndexChange(selectedIndex);
+    }
+  }, [emblaApi, currentIndex, onIndexChange]);
+
+  // 드래그 상태 추적
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Embla API 초기화 및 이벤트 등록
+  useEffect(() => {
+    if (!emblaApi) return;
+    
+    const onPointerDown = () => setIsDragging(true);
+    const onPointerUp = () => setIsDragging(false);
+    
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    emblaApi.on('pointerDown', onPointerDown);
+    emblaApi.on('pointerUp', onPointerUp);
+    
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+      emblaApi.off('pointerDown', onPointerDown);
+      emblaApi.off('pointerUp', onPointerUp);
+    };
+  }, [emblaApi, onSelect]);
+
+  // 외부에서 currentIndex가 변경될 때 Embla 동기화
+  useEffect(() => {
+    if (emblaApi && emblaApi.selectedScrollSnap() !== currentIndex) {
+      emblaApi.scrollTo(currentIndex, false); // 즉시 이동 (애니메이션 없음)
+    }
+  }, [emblaApi, currentIndex]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -23,13 +75,15 @@ const ImageViewer = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 키보드 이벤트 처리
+  // 키보드 이벤트 처리 (Embla와 연동)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowLeft' && currentIndex > 0) {
-        onIndexChange(currentIndex - 1);
-      } else if (e.key === 'ArrowRight' && currentIndex < images.length - 1) {
-        onIndexChange(currentIndex + 1);
+      if (!emblaApi) return;
+      
+      if (e.key === 'ArrowLeft') {
+        emblaApi.scrollPrev();
+      } else if (e.key === 'ArrowRight') {
+        emblaApi.scrollNext();
       } else if (e.key === 'Escape') {
         onClose();
       }
@@ -37,94 +91,14 @@ const ImageViewer = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, images.length, onIndexChange, onClose]);
+  }, [emblaApi, onClose]);
 
-  // 터치/마우스 시작
-  const handleStart = (clientX) => {
-    setStartX(clientX);
-    setIsDragging(true);
-    setDragOffset(0);
-  };
-
-  // 터치/마우스 이동
-  const handleMove = (clientX) => {
-    if (!isDragging) return;
-    
-    const diff = clientX - startX;
-    const maxOffset = windowWidth * 0.8; // 최대 드래그 거리 제한
-    const clampedOffset = Math.max(-maxOffset, Math.min(maxOffset, diff));
-    setDragOffset(clampedOffset);
-  };
-
-  // 터치/마우스 종료
-  const handleEnd = () => {
-    if (!isDragging) return;
-    
-    const threshold = windowWidth * 0.2; // 20% 이상 드래그시 페이지 변경
-    
-    if (Math.abs(dragOffset) > threshold) {
-      if (dragOffset > 0 && currentIndex > 0) {
-        // 오른쪽으로 드래그 - 이전 이미지
-        onIndexChange(currentIndex - 1);
-      } else if (dragOffset < 0 && currentIndex < images.length - 1) {
-        // 왼쪽으로 드래그 - 다음 이미지
-        onIndexChange(currentIndex + 1);
-      }
+  // 썸네일 클릭 핸들러 (Embla와 연동)
+  const handleThumbnailClick = useCallback((index) => {
+    if (emblaApi) {
+      emblaApi.scrollTo(index);
     }
-    
-    setIsDragging(false);
-    setDragOffset(0);
-    setStartX(0);
-  };
-
-  // 터치 이벤트
-  const handleTouchStart = (e) => {
-    e.preventDefault();
-    handleStart(e.touches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    e.preventDefault();
-    handleMove(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e) => {
-    e.preventDefault();
-    handleEnd();
-  };
-
-  // 마우스 이벤트
-  const handleMouseDown = (e) => {
-    e.preventDefault();
-    handleStart(e.clientX);
-  };
-
-  const handleMouseMove = (e) => {
-    e.preventDefault();
-    handleMove(e.clientX);
-  };
-
-  const handleMouseUp = (e) => {
-    e.preventDefault();
-    handleEnd();
-  };
-
-  // 마우스 이벤트 리스너 등록/해제
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, startX]);
-
-  // 썸네일 클릭 핸들러
-  const handleThumbnailClick = (index) => {
-    onIndexChange(index);
-  };
+  }, [emblaApi]);
 
   // 이미지 로딩 최적화를 위한 preload
   useEffect(() => {
@@ -170,23 +144,37 @@ const ImageViewer = ({
     alignItems: 'center',
   };
 
-  const imageContainerStyle = {
+  const emblaContainerStyle = {
     flex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+  };
+
+  const emblaViewportStyle = {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    touchAction: 'pan-y',
+    cursor: isDragging ? 'grabbing' : 'grab',
+  };
+
+  const emblaSlideStyle = {
+    flex: '0 0 100%',
+    minWidth: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
-    position: 'relative',
-    cursor: isDragging ? 'grabbing' : 'grab',
+    padding: windowWidth <= 480 ? '10px' : '20px',
   };
 
   const imageStyle = {
     maxWidth: '100%',
     maxHeight: '100%',
     objectFit: 'contain',
-    transform: `translateX(${dragOffset}px)`,
-    transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    pointerEvents: 'none',
+    borderRadius: '12px',
+    willChange: 'transform',
+    transform: 'translateZ(0)',
   };
 
   const thumbnailContainerStyle = {
@@ -253,23 +241,24 @@ const ImageViewer = ({
         </button>
       </div>
 
-      {/* 메인 이미지 */}
-      <div 
-        ref={containerRef}
-        style={imageContainerStyle}
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-      >
-        <img
-          ref={el => imageRefs.current[currentIndex] = el}
-          src={`/images/images/archive/${folder}/${images[currentIndex]}`}
-          alt={`Image ${currentIndex + 1}`}
-          style={imageStyle}
-          loading="eager"
-        />
+      {/* 메인 이미지 - Embla Carousel */}
+      <div style={emblaContainerStyle} onClick={(e) => e.stopPropagation()}>
+        <div ref={emblaRef} style={emblaViewportStyle}>
+          <div style={{ display: 'flex', height: '100%' }}>
+            {images.map((image, index) => (
+              <div key={index} style={emblaSlideStyle}>
+                <img
+                  ref={el => imageRefs.current[index] = el}
+                  src={`/images/images/archive/${folder}/${image}`}
+                  alt={`Image ${index + 1}`}
+                  style={imageStyle}
+                  loading={Math.abs(index - currentIndex) <= 1 ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* 썸네일 네비게이션 */}
