@@ -1,9 +1,11 @@
 // 📄 src/pages/Daily/Daily.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ImageViewer from '../../components/ImageViewer/ImageViewer';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 
 function Daily() {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState('all');
   const [dailyCollections, setDailyCollections] = useState([]);
   const [modalImage, setModalImage] = useState(null);
@@ -195,9 +197,14 @@ function Daily() {
     setCurrentImageIndex(0);
     setIsFullscreen(false);
     
-    // URL 정리 (전체화면 모드에서만)
-    if (window.history.state && window.history.state.modal) {
-      window.history.back();
+    // PC에서는 일자별 페이지로 명시적으로 이동
+    if (window.innerWidth >= 768) {
+      navigate('/daily');
+    } else {
+      // 모바일에서는 기존 로직 유지 (URL 정리)
+      if (window.history.state && window.history.state.modal) {
+        window.history.back();
+      }
     }
   };
 
@@ -1180,7 +1187,6 @@ function Daily() {
             setModalImage(currentCollection.images[newIndex]);
           }}
           title={currentCollection.title}
-          isDarkMode={true}
           folder={currentCollection.folder}
         />
       )}

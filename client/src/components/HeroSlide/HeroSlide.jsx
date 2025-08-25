@@ -17,13 +17,13 @@ function HeroSlide() {
     setFeaturedCollections(collections);
   }, []);
 
-  // 자동 슬라이드 (5초마다)
+  // 자동 슬라이드 (3초마다)
   useEffect(() => {
     if (featuredCollections.length === 0) return;
     
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % featuredCollections.length);
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [featuredCollections.length]);

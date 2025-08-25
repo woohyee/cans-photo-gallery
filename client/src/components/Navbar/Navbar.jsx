@@ -44,8 +44,8 @@ const Navbar = () => {
     zIndex: 2000,
     transition: 'all 0.3s ease',
     backgroundColor: isScrolled
-      ? (isDarkMode ? 'rgba(17, 24, 39, 0.9)' : 'rgba(255, 255, 255, 0.9)')
-      : (isDarkMode ? 'rgba(17, 24, 39, 0.8)' : 'rgba(255, 255, 255, 0.8)'),
+      ? (isDarkMode ? 'rgba(62, 39, 35, 0.9)' : 'rgba(139, 69, 19, 0.25)') // 더 짙은 초콜릿 색
+      : (isDarkMode ? 'rgba(62, 39, 35, 0.8)' : 'rgba(139, 69, 19, 0.2)'),
     backdropFilter: 'blur(12px)',
     boxShadow: isScrolled ? '0 2px 4px -1px rgba(0, 0, 0, 0.1)' : 'none',
   };
@@ -77,13 +77,13 @@ const Navbar = () => {
   };
 
   const logoStyle = {
-    height: windowWidth < 768 ? '40px' : '56px',
-    width: windowWidth < 768 ? '40px' : '56px',
+    height: windowWidth < 768 ? '48px' : '64px', // 폰: 40px→48px, PC: 56px→64px
+    width: windowWidth < 768 ? '48px' : '64px',
     filter: isDarkMode ? 'invert(1)' : 'none',
   };
 
   const titleStyle = {
-    fontSize: windowWidth < 480 ? '14px' : windowWidth < 768 ? '18px' : '32px',
+    fontSize: windowWidth < 480 ? '16px' : windowWidth < 768 ? '20px' : '36px', // 폰: 14px→16px, 태블릿: 18px→20px, PC: 32px→36px
     fontWeight: 'bold',
     color: isDarkMode ? 'white' : '#1f2937',
     margin: 0,
@@ -98,7 +98,7 @@ const Navbar = () => {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '12px',
-    backgroundColor: 'rgba(249, 115, 22, 0.2)',
+    backgroundColor: 'transparent', // 네비게이션 바와 동일하게 투명
     border: 'none',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
@@ -131,11 +131,11 @@ const Navbar = () => {
 
   const mobileMenuContainerStyle = {
     padding: '12px',
-    backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: isDarkMode ? 'rgba(62, 39, 35, 0.95)' : 'rgba(139, 69, 19, 0.15)',
     backdropFilter: 'blur(12px)',
     borderRadius: '8px',
     boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)',
-    border: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+    border: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(139, 69, 19, 0.3)'}`,
   };
 
   const mobileLinkStyle = {
@@ -176,8 +176,8 @@ const Navbar = () => {
           <button
             onClick={toggleMenu}
             style={hamburgerButtonStyle}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(249, 115, 22, 0.3)'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(249, 115, 22, 0.2)'}
+            onMouseEnter={(e) => e.target.style.backgroundColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: windowWidth < 768 ? '4px' : '6px' }}>
               <span style={hamburgerLineStyle(0)} />
