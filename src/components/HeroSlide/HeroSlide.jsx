@@ -35,8 +35,8 @@ function HeroSlide() {
   const currentCollection = featuredCollections[currentSlide];
   const mainImage = currentCollection.images[0]; // 첫 번째 이미지를 대표 이미지로
 
-  const headerHeight = window.innerWidth <= 480 ? '120px' : window.innerWidth <= 768 ? '140px' : '20vh';
-  const contentHeight = window.innerWidth <= 480 ? 'calc(100vh - 120px)' : window.innerWidth <= 768 ? 'calc(100vh - 140px)' : '80vh';
+  const headerHeight = '0px'; // 네비게이션 바는 이미 App.jsx에서 paddingTop으로 처리됨
+  const contentHeight = '100%'; // 전체 높이 사용
 
   return (
     <div style={{ 
